@@ -35,10 +35,27 @@ module.exports = tseslint.config(
       '@typescript-eslint/explicit-module-boundary-types': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-floating-promises': 'off',
-      '@typescript-eslint/no-unused-vars': ['error', { destructuredArrayIgnorePattern: '^_' }],
       'arrow-body-style': ['error', 'as-needed'],
       'arrow-parens': ['error', 'as-needed'],
-      'jsx-quotes': ['error', 'prefer-single'],
+      '@typescript-eslint/consistent-type-imports': [
+        'warn',
+        {
+          prefer: 'type-imports',
+          disallowTypeAnnotations: true,
+          fixStyle: 'inline-type-imports'
+        }
+      ],
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          vars: 'all',
+          args: 'after-used',
+          ignoreRestSiblings: true,
+          caughtErrors: 'none',
+          destructuredArrayIgnorePattern: '^_*',
+          argsIgnorePattern: '^_*'
+        }
+      ],
       'import/order': [
         'error',
         {
