@@ -7,7 +7,7 @@ interface AuthenticatedUser extends Request {
   user: JwtPayload
 }
 
-export const getCurrentUser = createParamDecorator(
+export const GetCurrentUser = createParamDecorator(
   (data: string | undefined, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest<AuthenticatedUser>()
     const user = request.user
