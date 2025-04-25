@@ -23,7 +23,7 @@ export class JwtAuthGuard implements CanActivate {
     }
 
     const request = context.switchToHttp().getRequest<Request>()
-    const token = this.extractTokenFromHeader(request)
+    const token = this.extractToken(request)
 
     if (!token) {
       throw new UnauthorizedException()
@@ -39,7 +39,14 @@ export class JwtAuthGuard implements CanActivate {
     }
   }
 
-  private extractTokenFromHeader(request: Request): string | undefined {
+  private extractToken(request: Request): string | undefined {
+    // First try to extract from cookies
+    const cookieToken = this.tokenService.extractTokenFromCookies(request.cookies)
+    if (cookieToken) {
+      return cookieToken
+    }
+
+    // Fall back to authorization header
     const [type, token] = request.headers.authorization?.split(' ') ?? []
     return type === 'Bearer' ? token : undefined
   }
