@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common'
 import { Test, type TestingModule } from '@nestjs/testing'
 import * as argon from 'argon2'
+import { type Response } from 'express'
 
 import { PrismaService } from '~/prisma/prisma.service'
 import { TokenService } from '~/token'
@@ -25,12 +26,16 @@ describe('AuthService', () => {
   }
 
   const mockTokenService = {
-    generateToken: jest.fn().mockResolvedValue('jwt-token')
+    clearCookie: jest.fn()
   }
 
   const mockUserService = {
     create: jest.fn()
   }
+
+  const mockResponse = {
+    clearCookie: jest.fn()
+  } as unknown as Response
 
   beforeEach(async () => {
     jest.clearAllMocks()
@@ -70,11 +75,9 @@ describe('AuthService', () => {
       updatedAt: new Date()
     }
 
-    it('should return user and token for valid credentials', async () => {
+    it('should return user and payload for valid credentials', async () => {
       mockPrismaService.user.findFirst.mockResolvedValue(user)
       jest.spyOn(argon, 'verify').mockResolvedValue(true)
-
-      mockTokenService.generateToken.mockResolvedValue('test-token')
 
       const result = await service.login(loginDto)
 
@@ -86,14 +89,12 @@ describe('AuthService', () => {
 
       expect(argon.verify).toHaveBeenCalledWith(user.hash, loginDto.password)
 
-      expect(mockTokenService.generateToken).toHaveBeenCalledWith({
-        sub: user.id,
-        identifier: loginDto.identifier
-      })
-
       expect(result).toEqual({
         user,
-        token: 'test-token'
+        payload: {
+          sub: user.id,
+          identifier: user.username
+        }
       })
     })
 
@@ -153,12 +154,10 @@ describe('AuthService', () => {
       updatedAt: new Date()
     }
 
-    it('should create and return a new user with token', async () => {
+    it('should create and return a new user with payload', async () => {
       mockPrismaService.user.findFirst.mockResolvedValue(null)
 
       mockUserService.create.mockResolvedValue(createdUser)
-
-      mockTokenService.generateToken.mockResolvedValue('new-token')
 
       const result = await service.register(registerDto)
 
@@ -176,14 +175,12 @@ describe('AuthService', () => {
         lastName: registerDto.lastName
       })
 
-      expect(mockTokenService.generateToken).toHaveBeenCalledWith({
-        sub: createdUser.id,
-        identifier: createdUser.username
-      })
-
       expect(result).toEqual({
         user: createdUser,
-        token: 'new-token'
+        payload: {
+          sub: createdUser.id,
+          identifier: createdUser.username
+        }
       })
     })
 
@@ -192,6 +189,15 @@ describe('AuthService', () => {
 
       await expect(service.register(registerDto)).rejects.toThrow(ConflictException)
       expect(mockUserService.create).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('logout', () => {
+    it('should clear the auth cookie and return success message', () => {
+      const result = service.logout(mockResponse)
+
+      expect(mockTokenService.clearCookie).toHaveBeenCalledWith(mockResponse)
+      expect(result).toEqual({ message: 'Logged out successfully' })
     })
   })
 })

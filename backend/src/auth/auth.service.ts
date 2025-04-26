@@ -5,8 +5,9 @@ import {
   UnauthorizedException
 } from '@nestjs/common'
 import * as argon from 'argon2'
+import { Response } from 'express'
 
-import { PrismaService } from '~/prisma/prisma.service'
+import { PrismaService } from '~/prisma'
 import { TokenService } from '~/token'
 import { UserService } from '~/user'
 
@@ -17,8 +18,8 @@ import { RegisterDto } from './dto/register.dto'
 export class AuthService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly tokenService: TokenService,
-    private readonly userService: UserService
+    private readonly userService: UserService,
+    private readonly tokenService: TokenService
   ) {}
 
   async login(loginDto: LoginDto) {
@@ -45,14 +46,12 @@ export class AuthService {
         throw new UnauthorizedException('User is blocked')
       }
 
-      const payload = { sub: user.id, identifier }
-
-      const token = await this.tokenService.generateToken(payload)
-
-      return {
-        user,
-        token
+      const payload = {
+        sub: user.id,
+        identifier: user.username
       }
+
+      return { user, payload }
     } catch (error) {
       if (error instanceof UnauthorizedException) {
         throw error
@@ -88,11 +87,12 @@ export class AuthService {
       identifier: user.username
     }
 
-    const token = await this.tokenService.generateToken(payload)
+    return { user, payload }
+  }
 
-    return {
-      user,
-      token
-    }
+  logout(response: Response) {
+    this.tokenService.clearCookie(response)
+
+    return { message: 'Logged out successfully' }
   }
 }
