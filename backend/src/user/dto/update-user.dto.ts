@@ -1,16 +1,22 @@
-import { IsOptional, IsString, MinLength } from 'class-validator'
+import { IsOptional } from 'class-validator'
 
+import { IsName, IsUsername } from '~/shared/validation/decorators'
+
+/**
+ * DTO for updating user profile
+ * Uses shared validation decorators from ~/shared/validation/decorators
+ * Validation rules are defined in ~/shared/validation/constants
+ */
 export class UpdateUserDto {
-  @IsString()
+  @IsUsername()
   @IsOptional()
-  @MinLength(3)
   username?: string
 
-  @IsString()
+  @IsName()
   @IsOptional()
   firstName?: string
 
-  @IsString()
+  @IsName()
   @IsOptional()
   lastName?: string
 }

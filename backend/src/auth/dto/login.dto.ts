@@ -1,11 +1,24 @@
-import { IsNotEmpty, IsString } from 'class-validator'
+import { IsNotEmpty, MaxLength, MinLength } from 'class-validator'
 
+import { VALIDATION } from '~/shared/validation/constants'
+import { IsPassword } from '~/shared/validation/decorators'
+
+/**
+ * DTO for user login
+ * Uses shared validation decorators from ~/shared/validation/decorators
+ * Validation rules are defined in ~/shared/validation/constants
+ */
 export class LoginDto {
-  @IsNotEmpty()
-  @IsString()
+  @IsNotEmpty({ message: 'Identifier is required' })
+  @MinLength(VALIDATION.USERNAME.MIN_LENGTH, {
+    message: `Identifier must be at least ${VALIDATION.USERNAME.MIN_LENGTH} characters long`
+  })
+  @MaxLength(VALIDATION.EMAIL.MAX_LENGTH, {
+    message: `Identifier must not exceed ${VALIDATION.EMAIL.MAX_LENGTH} characters`
+  })
   identifier: string
 
-  @IsString()
-  @IsNotEmpty()
+  @IsPassword()
+  @IsNotEmpty({ message: 'Password is required' })
   password: string
 }
