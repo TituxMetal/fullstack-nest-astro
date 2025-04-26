@@ -1,0 +1,109 @@
+import { Reflector } from '@nestjs/core'
+import { Test, type TestingModule } from '@nestjs/testing'
+
+import { TokenService } from '~/token'
+
+import { type User } from './entities/user.entity'
+import { UserController } from './user.controller'
+import { UserService } from './user.service'
+
+describe('UserController', () => {
+  let controller: UserController
+
+  const mockUserService = {
+    getProfile: jest.fn(),
+    create: jest.fn(),
+    findAll: jest.fn(),
+    findOne: jest.fn(),
+    update: jest.fn(),
+    remove: jest.fn()
+  }
+
+  const mockTokenService = {
+    verifyToken: jest.fn(),
+    extractTokenFromCookies: jest.fn()
+  }
+
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      controllers: [UserController],
+      providers: [
+        {
+          provide: UserService,
+          useValue: mockUserService
+        },
+        {
+          provide: TokenService,
+          useValue: mockTokenService
+        },
+        Reflector
+      ]
+    }).compile()
+
+    controller = module.get<UserController>(UserController)
+  })
+
+  it('should be defined', () => {
+    expect(controller).toBeDefined()
+  })
+
+  describe('getProfile', () => {
+    const mockUser: User = {
+      id: '1',
+      email: 'test@example.com',
+      username: 'testuser',
+      firstName: 'Test',
+      lastName: 'User',
+      confirmed: true,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    } as User
+
+    it('should return user profile', async () => {
+      mockUserService.getProfile.mockResolvedValue(mockUser)
+
+      const result = await controller.getProfile({ sub: '1' })
+
+      expect(mockUserService.getProfile).toHaveBeenCalledWith('1')
+      expect(result).toEqual(mockUser)
+    })
+  })
+
+  describe('updateProfile', () => {
+    const mockUser: User = {
+      id: '1',
+      email: 'test@example.com',
+      username: 'testuser',
+      firstName: 'Test',
+      lastName: 'User',
+      confirmed: true,
+      createdAt: new Date(),
+      updatedAt: new Date()
+    } as User
+
+    const updateDto = {
+      username: 'newusername',
+      firstName: 'New',
+      lastName: 'Name'
+    }
+
+    it('should update user profile', async () => {
+      mockUserService.update.mockResolvedValue(mockUser)
+
+      const result = await controller.updateProfile({ sub: '1' }, updateDto)
+
+      expect(mockUserService.update).toHaveBeenCalledWith('1', updateDto)
+      expect(result).toEqual(mockUser)
+    })
+  })
+
+  describe('deleteProfile', () => {
+    it('should delete user profile', async () => {
+      mockUserService.remove.mockResolvedValue(undefined)
+
+      await controller.deleteProfile({ sub: '1' })
+
+      expect(mockUserService.remove).toHaveBeenCalledWith('1')
+    })
+  })
+})

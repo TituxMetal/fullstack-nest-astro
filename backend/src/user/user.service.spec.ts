@@ -15,14 +15,25 @@ describe('UserService', () => {
   const mockUser: User = {
     id: '1',
     email: 'test@example.com',
-    hash: 'hashedPassword',
+    username: 'testuser',
     firstName: 'Test',
     lastName: 'User',
-    username: 'testuser',
+    hash: 'hashed-password',
     confirmed: true,
     blocked: false,
     createdAt: new Date(),
     updatedAt: new Date()
+  }
+
+  const mockPrismaService = {
+    user: {
+      findUnique: jest.fn(),
+      findMany: jest.fn(),
+      create: jest.fn(),
+      update: jest.fn(),
+      delete: jest.fn(),
+      findFirst: jest.fn()
+    }
   }
 
   beforeEach(async () => {
@@ -31,15 +42,7 @@ describe('UserService', () => {
         UserService,
         {
           provide: PrismaService,
-          useValue: {
-            user: {
-              create: jest.fn(),
-              findMany: jest.fn(),
-              findUnique: jest.fn(),
-              update: jest.fn(),
-              delete: jest.fn()
-            }
-          }
+          useValue: mockPrismaService
         }
       ]
     }).compile()
@@ -181,6 +184,59 @@ describe('UserService', () => {
       )
 
       await expect(service.remove('1')).rejects.toThrow(UserNotFoundException)
+    })
+  })
+
+  describe('findByEmailOrUsername', () => {
+    it('should find user by email', async () => {
+      mockPrismaService.user.findFirst.mockResolvedValue(mockUser)
+
+      const result = await service.findByEmailOrUsername('test@example.com')
+
+      expect(mockPrismaService.user.findFirst).toHaveBeenCalledWith({
+        where: {
+          OR: [{ email: 'test@example.com' }, { username: 'test@example.com' }]
+        }
+      })
+      expect(result).toEqual(mockUser)
+    })
+
+    it('should find user by username', async () => {
+      mockPrismaService.user.findFirst.mockResolvedValue(mockUser)
+
+      const result = await service.findByEmailOrUsername('testuser')
+
+      expect(mockPrismaService.user.findFirst).toHaveBeenCalledWith({
+        where: {
+          OR: [{ email: 'testuser' }, { username: 'testuser' }]
+        }
+      })
+      expect(result).toEqual(mockUser)
+    })
+
+    it('should throw UserNotFoundException when user not found', async () => {
+      mockPrismaService.user.findFirst.mockResolvedValue(null)
+
+      await expect(service.findByEmailOrUsername('notfound')).rejects.toThrow(UserNotFoundException)
+    })
+  })
+
+  describe('getProfile', () => {
+    it('should return user profile', async () => {
+      const spy = jest.spyOn(service, 'findOne')
+      spy.mockResolvedValue(mockUser)
+
+      const result = await service.getProfile('1')
+
+      expect(result).toEqual(mockUser)
+      expect(spy).toHaveBeenCalledWith('1')
+    })
+
+    it('should throw UserNotFoundException when user is not found', async () => {
+      const spy = jest.spyOn(service, 'findOne')
+      spy.mockRejectedValue(new UserNotFoundException('1'))
+
+      await expect(service.getProfile('1')).rejects.toThrow(UserNotFoundException)
     })
   })
 })
