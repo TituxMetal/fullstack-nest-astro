@@ -8,9 +8,13 @@ import {
   Param,
   Patch,
   Post,
+  UseGuards,
   UsePipes,
   ValidationPipe
 } from '@nestjs/common'
+
+import { GetCurrentUser } from '~/auth/decorators'
+import { JwtAuthGuard } from '~/auth/guards/jwtAuth.guard'
 
 import { CreateUserDto } from './dto/create-user.dto'
 import { UpdateUserDto } from './dto/update-user.dto'
@@ -50,5 +54,29 @@ export class UserController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async remove(@Param('id') id: string): Promise<void> {
     await this.userService.remove(id)
+  }
+
+  @Get('me')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async getProfile(@GetCurrentUser() user: { sub: string }): Promise<User> {
+    return this.userService.getProfile(user.sub)
+  }
+
+  @Patch('me')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async updateProfile(
+    @GetCurrentUser() user: { sub: string },
+    @Body() updateUserDto: UpdateUserDto
+  ): Promise<User> {
+    return this.userService.update(user.sub, updateUserDto)
+  }
+
+  @Delete('me')
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deleteProfile(@GetCurrentUser() user: { sub: string }): Promise<void> {
+    await this.userService.remove(user.sub)
   }
 }

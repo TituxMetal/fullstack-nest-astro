@@ -13,18 +13,6 @@ import { UserNotFoundException } from './exceptions/user-not-found.exception'
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(createUserDto: CreateUserDto): Promise<User> {
-    const { password, ...rest } = createUserDto
-    const hash = await argon2.hash(password)
-
-    return this.prisma.user.create({
-      data: {
-        ...rest,
-        hash
-      }
-    })
-  }
-
   async findAll(): Promise<User[]> {
     return this.prisma.user.findMany()
   }
@@ -39,6 +27,36 @@ export class UserService {
     }
 
     return user
+  }
+
+  async findByEmailOrUsername(identifier: string): Promise<User> {
+    const user = await this.prisma.user.findFirst({
+      where: {
+        OR: [{ email: identifier }, { username: identifier }]
+      }
+    })
+
+    if (!user) {
+      throw new UserNotFoundException(identifier)
+    }
+
+    return user
+  }
+
+  async getProfile(id: string): Promise<User> {
+    return this.findOne(id)
+  }
+
+  async create(createUserDto: CreateUserDto): Promise<User> {
+    const { password, ...rest } = createUserDto
+    const hash = await argon2.hash(password)
+
+    return this.prisma.user.create({
+      data: {
+        ...rest,
+        hash
+      }
+    })
   }
 
   async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
