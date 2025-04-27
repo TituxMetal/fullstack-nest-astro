@@ -3,8 +3,8 @@ import { Reflector } from '@nestjs/core'
 import { Test, type TestingModule } from '@nestjs/testing'
 
 import { IS_PUBLIC_KEY } from '~/auth/decorators'
-import type { JwtPayload } from '~/token'
 import { TokenService } from '~/token'
+import type { JwtPayload } from '~/token/interfaces'
 
 import { JwtAuthGuard } from './jwtAuth.guard'
 

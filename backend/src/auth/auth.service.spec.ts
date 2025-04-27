@@ -1,55 +1,83 @@
-import {
-  ConflictException,
-  InternalServerErrorException,
-  UnauthorizedException
-} from '@nestjs/common'
+import { ConflictException, UnauthorizedException } from '@nestjs/common'
 import { Test, type TestingModule } from '@nestjs/testing'
+import { Prisma } from '@prisma/client'
 import * as argon from 'argon2'
 import { type Response } from 'express'
 
-import { PrismaService } from '~/prisma/prisma.service'
 import { TokenService } from '~/token'
 import { UserService } from '~/user'
+import { type UserEntity } from '~/user/entities'
+import { UserNotFoundException } from '~/user/exceptions'
 
 import { AuthService } from './auth.service'
 import type { LoginDto } from './dto/login.dto'
 import type { RegisterDto } from './dto/register.dto'
 
+const mockPrismaUser: UserEntity = {
+  id: '1',
+  email: 'test@example.com',
+  username: 'testuser',
+  hash: '$argon2id$v=19$m=65536,t=3,p=4$hash',
+  firstName: 'Test',
+  lastName: 'User',
+  confirmed: true,
+  blocked: false,
+  createdAt: new Date(),
+  updatedAt: new Date()
+}
+
+const mockResponse = {
+  clearCookie: jest.fn(),
+  cookie: jest.fn(),
+  status: jest.fn().mockReturnThis(),
+  json: jest.fn().mockReturnThis()
+} as unknown as Response
+
 describe('AuthService', () => {
   let service: AuthService
-
-  const mockPrismaService = {
-    user: {
-      findFirst: jest.fn(),
-      findUnique: jest.fn()
-    }
-  }
-
-  const mockTokenService = {
-    clearCookie: jest.fn()
-  }
-
-  const mockUserService = {
-    create: jest.fn()
-  }
-
-  const mockResponse = {
-    clearCookie: jest.fn()
-  } as unknown as Response
+  let userService: jest.Mocked<UserService>
+  let tokenService: jest.Mocked<TokenService>
+  let verifyMock: jest.SpyInstance
 
   beforeEach(async () => {
-    jest.clearAllMocks()
-
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        AuthService,
-        { provide: PrismaService, useValue: mockPrismaService },
-        { provide: TokenService, useValue: mockTokenService },
-        { provide: UserService, useValue: mockUserService }
+        {
+          provide: UserService,
+          useValue: {
+            findByEmailOrUsername: () => Promise.resolve(mockPrismaUser),
+            create: () => Promise.resolve(mockPrismaUser)
+          }
+        },
+        {
+          provide: TokenService,
+          useValue: {
+            clearCookie: () => undefined,
+            generateToken: () => 'token',
+            verifyToken: () => true,
+            getCookieOptions: () => ({}),
+            setCookie: () => undefined,
+            extractTokenFromCookies: () => 'token'
+          }
+        },
+        {
+          provide: AuthService,
+          useFactory: (userService: UserService, tokenService: TokenService) =>
+            new AuthService(userService, tokenService),
+          inject: [UserService, TokenService]
+        }
       ]
     }).compile()
 
     service = module.get<AuthService>(AuthService)
+    userService = module.get(UserService)
+    tokenService = module.get(TokenService)
+    verifyMock = jest.spyOn(argon, 'verify')
+  })
+
+  afterEach(() => {
+    verifyMock.mockReset()
+    verifyMock.mockRestore()
   })
 
   it('should be defined', () => {
@@ -62,141 +90,103 @@ describe('AuthService', () => {
       password: 'password123'
     }
 
-    const user = {
-      id: '1',
-      email: 'test@example.com',
-      username: 'testuser',
-      hash: '$argon2id$v=19$m=65536,t=3,p=4$hash',
-      firstName: 'Test',
-      lastName: 'User',
-      confirmed: true,
-      blocked: false,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    }
-
     it('should return user and payload for valid credentials', async () => {
-      mockPrismaService.user.findFirst.mockResolvedValue(user)
-      jest.spyOn(argon, 'verify').mockResolvedValue(true)
+      const findByEmailOrUsername = jest.fn().mockResolvedValue(mockPrismaUser)
+      userService.findByEmailOrUsername = findByEmailOrUsername
+      verifyMock.mockResolvedValue(true)
 
       const result = await service.login(loginDto)
 
-      expect(mockPrismaService.user.findFirst).toHaveBeenCalledWith({
-        where: {
-          OR: [{ email: loginDto.identifier }, { username: loginDto.identifier }]
-        }
-      })
-
-      expect(argon.verify).toHaveBeenCalledWith(user.hash, loginDto.password)
-
+      expect(findByEmailOrUsername).toHaveBeenCalledWith(loginDto.identifier)
+      expect(verifyMock).toHaveBeenCalledWith(mockPrismaUser.hash, loginDto.password)
       expect(result).toEqual({
-        user,
+        user: mockPrismaUser,
         payload: {
-          sub: user.id,
-          identifier: user.username
+          sub: mockPrismaUser.id,
+          identifier: mockPrismaUser.username
         }
       })
     })
 
     it('should throw UnauthorizedException when user is not found', async () => {
-      mockPrismaService.user.findFirst.mockResolvedValue(null)
+      const findByEmailOrUsername = jest
+        .fn()
+        .mockRejectedValue(new UserNotFoundException('testuser'))
+      userService.findByEmailOrUsername = findByEmailOrUsername
 
       await expect(service.login(loginDto)).rejects.toThrow(UnauthorizedException)
-      expect(mockPrismaService.user.findFirst).toHaveBeenCalled()
-      expect(argon.verify).not.toHaveBeenCalled()
+      expect(findByEmailOrUsername).toHaveBeenCalledWith(loginDto.identifier)
+      expect(verifyMock).not.toHaveBeenCalled()
     })
 
     it('should throw UnauthorizedException when password is invalid', async () => {
-      mockPrismaService.user.findFirst.mockResolvedValue(user)
-      jest.spyOn(argon, 'verify').mockResolvedValue(false)
+      const findByEmailOrUsername = jest.fn().mockResolvedValue(mockPrismaUser)
+      userService.findByEmailOrUsername = findByEmailOrUsername
+      verifyMock.mockResolvedValue(false)
 
       await expect(service.login(loginDto)).rejects.toThrow(UnauthorizedException)
-      expect(argon.verify).toHaveBeenCalledWith(user.hash, loginDto.password)
+      expect(findByEmailOrUsername).toHaveBeenCalledWith(loginDto.identifier)
+      expect(verifyMock).toHaveBeenCalledWith(mockPrismaUser.hash, loginDto.password)
     })
 
     it('should throw UnauthorizedException when user is blocked', async () => {
-      mockPrismaService.user.findFirst.mockResolvedValue({
-        ...user,
-        blocked: true
-      })
-      jest.spyOn(argon, 'verify').mockResolvedValue(true)
+      const blockedUser = { ...mockPrismaUser, blocked: true }
+      const findByEmailOrUsername = jest.fn().mockResolvedValue(blockedUser)
+      userService.findByEmailOrUsername = findByEmailOrUsername
+      verifyMock.mockResolvedValue(true)
 
       await expect(service.login(loginDto)).rejects.toThrow(UnauthorizedException)
-    })
-
-    it('should throw InternalServerErrorException when argon throws an error', async () => {
-      mockPrismaService.user.findFirst.mockResolvedValue(user)
-      jest.spyOn(argon, 'verify').mockRejectedValue(new Error('Argon error'))
-
-      await expect(service.login(loginDto)).rejects.toThrow(InternalServerErrorException)
+      expect(findByEmailOrUsername).toHaveBeenCalledWith(loginDto.identifier)
+      expect(verifyMock).toHaveBeenCalledWith(blockedUser.hash, loginDto.password)
     })
   })
 
   describe('register', () => {
     const registerDto: RegisterDto = {
-      email: 'new@example.com',
-      username: 'newuser',
+      email: 'test@example.com',
+      username: 'testuser',
       password: 'password123',
-      firstName: 'New',
+      firstName: 'Test',
       lastName: 'User'
     }
 
-    const createdUser = {
-      id: '2',
-      email: 'new@example.com',
-      username: 'newuser',
-      hash: '$argon2id$v=19$m=65536,t=3,p=4$hash',
-      firstName: 'New',
-      lastName: 'User',
-      confirmed: true,
-      blocked: false,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    }
-
-    it('should create and return a new user with payload', async () => {
-      mockPrismaService.user.findFirst.mockResolvedValue(null)
-
-      mockUserService.create.mockResolvedValue(createdUser)
+    it('should create a new user and return user with payload', async () => {
+      const create = jest.fn().mockResolvedValue(mockPrismaUser)
+      userService.create = create
 
       const result = await service.register(registerDto)
 
-      expect(mockPrismaService.user.findFirst).toHaveBeenCalledWith({
-        where: {
-          OR: [{ email: registerDto.email }, { username: registerDto.username }]
-        }
-      })
-
-      expect(mockUserService.create).toHaveBeenCalledWith({
-        email: registerDto.email,
-        username: registerDto.username,
-        password: registerDto.password,
-        firstName: registerDto.firstName,
-        lastName: registerDto.lastName
-      })
-
+      expect(create).toHaveBeenCalledWith(registerDto)
       expect(result).toEqual({
-        user: createdUser,
+        user: mockPrismaUser,
         payload: {
-          sub: createdUser.id,
-          identifier: createdUser.username
+          sub: mockPrismaUser.id,
+          identifier: mockPrismaUser.username
         }
       })
     })
 
-    it('should throw ConflictException when email or username already exists', async () => {
-      mockPrismaService.user.findFirst.mockResolvedValue({ id: 'existing-id' })
+    it('should throw ConflictException when user already exists', async () => {
+      const prismaError = new Prisma.PrismaClientKnownRequestError('Unique constraint violation', {
+        code: 'P2002',
+        clientVersion: '5.x',
+        meta: { target: ['email'] }
+      })
+      const create = jest.fn().mockRejectedValue(prismaError)
+      userService.create = create
 
       await expect(service.register(registerDto)).rejects.toThrow(ConflictException)
-      expect(mockUserService.create).not.toHaveBeenCalled()
+      expect(create).toHaveBeenCalledWith(registerDto)
     })
   })
 
   describe('logout', () => {
-    it('should clear the auth cookie and return success message', () => {
+    it('should clear auth cookie and return success message', () => {
+      const clearCookie = jest.fn()
+      tokenService.clearCookie = clearCookie
       const result = service.logout(mockResponse)
 
-      expect(mockTokenService.clearCookie).toHaveBeenCalledWith(mockResponse)
+      expect(clearCookie).toHaveBeenCalledWith(mockResponse)
       expect(result).toEqual({ message: 'Logged out successfully' })
     })
   })

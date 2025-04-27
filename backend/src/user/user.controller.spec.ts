@@ -3,7 +3,7 @@ import { Test, type TestingModule } from '@nestjs/testing'
 
 import { TokenService } from '~/token'
 
-import { type User } from './entities/user.entity'
+import { type UserEntity } from './entities'
 import { UserController } from './user.controller'
 import { UserService } from './user.service'
 
@@ -48,7 +48,7 @@ describe('UserController', () => {
   })
 
   describe('getProfile', () => {
-    const mockUser: User = {
+    const mockUser: UserEntity = {
       id: '1',
       email: 'test@example.com',
       username: 'testuser',
@@ -57,7 +57,7 @@ describe('UserController', () => {
       confirmed: true,
       createdAt: new Date(),
       updatedAt: new Date()
-    } as User
+    } as UserEntity
 
     it('should return user profile', async () => {
       mockUserService.getProfile.mockResolvedValue(mockUser)
@@ -70,7 +70,7 @@ describe('UserController', () => {
   })
 
   describe('updateProfile', () => {
-    const mockUser: User = {
+    const mockUser: UserEntity = {
       id: '1',
       email: 'test@example.com',
       username: 'testuser',
@@ -79,7 +79,7 @@ describe('UserController', () => {
       confirmed: true,
       createdAt: new Date(),
       updatedAt: new Date()
-    } as User
+    } as UserEntity
 
     const updateDto = {
       username: 'newusername',
