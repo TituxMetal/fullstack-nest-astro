@@ -1,7 +1,6 @@
 import { IsEmail, IsNotEmpty, IsOptional, MaxLength } from 'class-validator'
 
-import { VALIDATION } from '~/shared/validation/constants'
-import { IsName, IsPassword, IsUsername } from '~/shared/validation/decorators'
+import { IsName, IsPassword, IsUsername, VALIDATION } from '~/shared/validation'
 
 /**
  * DTO for creating a new user

@@ -1,7 +1,6 @@
 import { IsNotEmpty, MaxLength, MinLength } from 'class-validator'
 
-import { VALIDATION } from '~/shared/validation/constants'
-import { IsPassword } from '~/shared/validation/decorators'
+import { IsPassword, VALIDATION } from '~/shared/validation'
 
 /**
  * DTO for user login

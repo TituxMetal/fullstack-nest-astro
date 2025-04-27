@@ -4,20 +4,33 @@ import * as argon2 from 'argon2'
 
 import { PrismaService } from '~/prisma'
 
-import { CreateUserDto } from './dto/create-user.dto'
-import { UpdateUserDto } from './dto/update-user.dto'
-import { User } from './entities/user.entity'
-import { UserNotFoundException } from './exceptions/user-not-found.exception'
+import { CreateUserDto, UpdateUserDto } from './dto'
+import { UserEntity } from './entities'
+import { UserNotFoundException } from './exceptions'
 
 @Injectable()
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAll(): Promise<User[]> {
+  async create(createUserDto: CreateUserDto): Promise<UserEntity> {
+    const hash = await argon2.hash(createUserDto.password)
+    const { password, ...userData } = createUserDto
+
+    const user = await this.prisma.user.create({
+      data: {
+        ...userData,
+        hash
+      }
+    })
+
+    return user
+  }
+
+  async findAll(): Promise<UserEntity[]> {
     return this.prisma.user.findMany()
   }
 
-  async findOne(id: string): Promise<User> {
+  async findOne(id: string): Promise<UserEntity> {
     const user = await this.prisma.user.findUnique({
       where: { id }
     })
@@ -29,7 +42,7 @@ export class UserService {
     return user
   }
 
-  async findByEmailOrUsername(identifier: string): Promise<User> {
+  async findByEmailOrUsername(identifier: string): Promise<UserEntity> {
     const user = await this.prisma.user.findFirst({
       where: {
         OR: [{ email: identifier }, { username: identifier }]
@@ -43,32 +56,23 @@ export class UserService {
     return user
   }
 
-  async getProfile(id: string): Promise<User> {
+  async getProfile(id: string): Promise<UserEntity> {
     return this.findOne(id)
   }
 
-  async create(createUserDto: CreateUserDto): Promise<User> {
-    const { password, ...rest } = createUserDto
-    const hash = await argon2.hash(password)
-
-    return this.prisma.user.create({
-      data: {
-        ...rest,
-        hash
-      }
-    })
-  }
-
-  async update(id: string, updateUserDto: UpdateUserDto): Promise<User> {
+  async update(id: string, updateUserDto: UpdateUserDto): Promise<UserEntity> {
     try {
-      return await this.prisma.user.update({
+      const user = await this.prisma.user.update({
         where: { id },
         data: updateUserDto
       })
+
+      return user
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
         throw new UserNotFoundException(id)
       }
+
       throw error
     }
   }
@@ -82,6 +86,7 @@ export class UserService {
       if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
         throw new UserNotFoundException(id)
       }
+
       throw error
     }
   }

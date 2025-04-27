@@ -1,6 +1,6 @@
 import { IsOptional } from 'class-validator'
 
-import { IsName, IsUsername } from '~/shared/validation/decorators'
+import { IsName, IsUsername } from '~/shared/validation'
 
 /**
  * DTO for updating user profile
