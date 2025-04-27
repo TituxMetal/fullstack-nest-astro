@@ -1,40 +1,28 @@
-import {
-  ConflictException,
-  Injectable,
-  InternalServerErrorException,
-  UnauthorizedException
-} from '@nestjs/common'
+import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common'
+import { Prisma } from '@prisma/client'
 import * as argon from 'argon2'
 import { Response } from 'express'
 
-import { PrismaService } from '~/prisma'
 import { TokenService } from '~/token'
+import type { JwtPayload } from '~/token/interfaces'
 import { UserService } from '~/user'
+import { UserNotFoundException } from '~/user/exceptions'
 
-import { LoginDto } from './dto/login.dto'
-import { RegisterDto } from './dto/register.dto'
+import { LoginDto, RegisterDto } from './dto'
+import { AuthUser } from './types'
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly prisma: PrismaService,
     private readonly userService: UserService,
     private readonly tokenService: TokenService
   ) {}
 
-  async login(loginDto: LoginDto) {
+  async login(loginDto: LoginDto): Promise<AuthUser> {
     const { identifier, password } = loginDto
 
     try {
-      const user = await this.prisma.user.findFirst({
-        where: {
-          OR: [{ email: identifier }, { username: identifier }]
-        }
-      })
-
-      if (!user) {
-        throw new UnauthorizedException('Invalid credentials')
-      }
+      const user = await this.userService.findByEmailOrUsername(identifier)
 
       const isValidPassword = await argon.verify(user.hash, password)
 
@@ -46,48 +34,48 @@ export class AuthService {
         throw new UnauthorizedException('User is blocked')
       }
 
-      const payload = {
+      const payload: JwtPayload = {
         sub: user.id,
         identifier: user.username
       }
 
       return { user, payload }
     } catch (error) {
-      if (error instanceof UnauthorizedException) {
-        throw error
+      if (error instanceof UserNotFoundException) {
+        throw new UnauthorizedException('Invalid credentials')
       }
 
-      throw new InternalServerErrorException('An error occurred during authentication')
+      throw error
     }
   }
 
-  async register(registerDto: RegisterDto) {
+  async register(registerDto: RegisterDto): Promise<AuthUser> {
     const { email, username, password, firstName, lastName } = registerDto
 
-    const existingUser = await this.prisma.user.findFirst({
-      where: {
-        OR: [{ email }, { username }]
+    try {
+      const user = await this.userService.create({
+        password,
+        firstName,
+        lastName,
+        email,
+        username
+      })
+
+      const payload: JwtPayload = {
+        sub: user.id,
+        identifier: user.username
       }
-    })
 
-    if (existingUser) {
-      throw new ConflictException('User with this email or username already exists')
+      return { user, payload }
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === 'P2002') {
+          throw new ConflictException('User already exists')
+        }
+      }
+
+      throw error
     }
-
-    const user = await this.userService.create({
-      password,
-      firstName,
-      lastName,
-      email,
-      username
-    })
-
-    const payload = {
-      sub: user.id,
-      identifier: user.username
-    }
-
-    return { user, payload }
   }
 
   logout(response: Response) {
