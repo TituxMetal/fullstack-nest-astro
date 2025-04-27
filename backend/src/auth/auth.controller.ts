@@ -31,12 +31,12 @@ export class AuthController {
   async login(
     @Body() loginDto: LoginDto,
     @Res({ passthrough: true }) response: Response
-  ): Promise<{ user: UserResponseDto }> {
+  ): Promise<UserResponseDto> {
     const { user, payload } = await this.authService.login(loginDto)
 
     await this.tokenService.setCookie(response, payload)
 
-    return { user }
+    return user
   }
 
   @Post('register')
@@ -44,12 +44,12 @@ export class AuthController {
   async register(
     @Body() registerDto: RegisterDto,
     @Res({ passthrough: true }) response: Response
-  ): Promise<{ user: UserResponseDto }> {
+  ): Promise<UserResponseDto> {
     const { user, payload } = await this.authService.register(registerDto)
 
     await this.tokenService.setCookie(response, payload)
 
-    return { user }
+    return user
   }
 
   @Post('logout')
