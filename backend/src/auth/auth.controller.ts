@@ -1,13 +1,25 @@
-import { Body, Controller, Post, Res } from '@nestjs/common'
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Post,
+  Res,
+  UsePipes,
+  ValidationPipe
+} from '@nestjs/common'
 import { Response } from 'express'
 
+import { Serialize } from '~/shared/decorators'
 import { TokenService } from '~/token'
+import { UserResponseDto } from '~/user/dto'
 
 import { AuthService } from './auth.service'
-import { LoginDto } from './dto/login.dto'
-import { RegisterDto } from './dto/register.dto'
+import { LoginDto, RegisterDto } from './dto'
 
 @Controller('auth')
+@UsePipes(new ValidationPipe({ transform: true, whitelist: true, forbidNonWhitelisted: true }))
+@Serialize(UserResponseDto)
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
@@ -15,7 +27,11 @@ export class AuthController {
   ) {}
 
   @Post('login')
-  async login(@Body() loginDto: LoginDto, @Res({ passthrough: true }) response: Response) {
+  @HttpCode(HttpStatus.OK)
+  async login(
+    @Body() loginDto: LoginDto,
+    @Res({ passthrough: true }) response: Response
+  ): Promise<{ user: UserResponseDto }> {
     const { user, payload } = await this.authService.login(loginDto)
 
     await this.tokenService.setCookie(response, payload)
@@ -24,7 +40,11 @@ export class AuthController {
   }
 
   @Post('register')
-  async register(@Body() registerDto: RegisterDto, @Res({ passthrough: true }) response: Response) {
+  @HttpCode(HttpStatus.CREATED)
+  async register(
+    @Body() registerDto: RegisterDto,
+    @Res({ passthrough: true }) response: Response
+  ): Promise<{ user: UserResponseDto }> {
     const { user, payload } = await this.authService.register(registerDto)
 
     await this.tokenService.setCookie(response, payload)
@@ -33,6 +53,7 @@ export class AuthController {
   }
 
   @Post('logout')
+  @HttpCode(HttpStatus.OK)
   logout(@Res({ passthrough: true }) response: Response) {
     return this.authService.logout(response)
   }
