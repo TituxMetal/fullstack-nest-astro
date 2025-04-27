@@ -5,7 +5,6 @@ import {
   Get,
   HttpCode,
   HttpStatus,
-  Param,
   Patch,
   Post,
   UseGuards,
@@ -23,6 +22,7 @@ import { UserService } from './user.service'
 @Controller('users')
 @UsePipes(new ValidationPipe({ transform: true, whitelist: true, forbidNonWhitelisted: true }))
 @Serialize(UserResponseDto)
+@UseGuards(JwtAuthGuard)
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
@@ -38,21 +38,13 @@ export class UserController {
     return this.userService.findAll()
   }
 
-  @Get(':id')
-  @HttpCode(HttpStatus.OK)
-  async findOne(@Param('id') id: string): Promise<UserResponseDto> {
-    return this.userService.findOne(id)
-  }
-
   @Get('me')
-  @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   async getProfile(@GetCurrentUser() user: { sub: string }): Promise<UserResponseDto> {
     return this.userService.getProfile(user.sub)
   }
 
   @Patch('me')
-  @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   async updateProfile(
     @GetCurrentUser() user: { sub: string },
@@ -62,7 +54,6 @@ export class UserController {
   }
 
   @Delete('me')
-  @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteProfile(@GetCurrentUser() user: { sub: string }): Promise<void> {
     return this.userService.remove(user.sub)
