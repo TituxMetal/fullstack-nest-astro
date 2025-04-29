@@ -68,7 +68,7 @@ describe('AuthController', () => {
 
       expect(mockAuthService.login).toHaveBeenCalledWith(loginDto)
       expect(mockTokenService.setCookie).toHaveBeenCalledWith(mockResponse, payload)
-      expect(result).toEqual({ user })
+      expect(result).toEqual(user)
     })
   })
 
@@ -101,7 +101,7 @@ describe('AuthController', () => {
 
       expect(mockAuthService.register).toHaveBeenCalledWith(registerDto)
       expect(mockTokenService.setCookie).toHaveBeenCalledWith(mockResponse, payload)
-      expect(result).toEqual({ user })
+      expect(result).toEqual(user)
     })
   })
 
