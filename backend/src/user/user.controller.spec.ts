@@ -1,6 +1,7 @@
 import { Reflector } from '@nestjs/core'
 import { Test, type TestingModule } from '@nestjs/testing'
 
+import { ConfigService } from '~/config'
 import { TokenService } from '~/token'
 
 import { type UserEntity } from './entities'
@@ -20,8 +21,20 @@ describe('UserController', () => {
   }
 
   const mockTokenService = {
-    verifyToken: jest.fn(),
-    extractTokenFromCookies: jest.fn()
+    verifyToken: jest.fn()
+  }
+
+  const mockConfigService = {
+    jwt: {
+      secret: 'test-secret',
+      expiresIn: '1h'
+    },
+    auth: {
+      cookieName: 'auth_token'
+    },
+    extractTokenFromCookies: jest.fn(
+      (cookies: Record<string, string>) => cookies?.['auth_token'] || null
+    )
   }
 
   beforeEach(async () => {
@@ -35,6 +48,10 @@ describe('UserController', () => {
         {
           provide: TokenService,
           useValue: mockTokenService
+        },
+        {
+          provide: ConfigService,
+          useValue: mockConfigService
         },
         Reflector
       ]
@@ -70,7 +87,7 @@ describe('UserController', () => {
   })
 
   describe('updateProfile', () => {
-    const mockUser: UserEntity = {
+    const mockUser = {
       id: '1',
       email: 'test@example.com',
       username: 'testuser',
@@ -79,7 +96,7 @@ describe('UserController', () => {
       confirmed: true,
       createdAt: new Date(),
       updatedAt: new Date()
-    } as UserEntity
+    }
 
     const updateDto = {
       username: 'newusername',
