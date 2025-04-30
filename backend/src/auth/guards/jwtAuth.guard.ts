@@ -3,12 +3,14 @@ import { Reflector } from '@nestjs/core'
 import type { Request } from 'express'
 
 import { IS_PUBLIC_KEY } from '~/auth/decorators'
+import { ConfigService } from '~/config/config.service'
 import { TokenService } from '~/token'
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
   constructor(
     private readonly tokenService: TokenService,
+    private readonly configService: ConfigService,
     private readonly reflector: Reflector
   ) {}
 
@@ -31,6 +33,7 @@ export class JwtAuthGuard implements CanActivate {
 
     try {
       const payload = await this.tokenService.verifyToken(token)
+
       request['user'] = payload
 
       return true
@@ -41,7 +44,7 @@ export class JwtAuthGuard implements CanActivate {
 
   private extractToken(request: Request): string | undefined {
     // First try to extract from cookies
-    const cookieToken = this.tokenService.extractTokenFromCookies(request.cookies)
+    const cookieToken = this.configService.extractTokenFromCookies(request.cookies)
     if (cookieToken) {
       return cookieToken
     }

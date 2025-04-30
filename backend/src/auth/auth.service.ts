@@ -1,7 +1,6 @@
 import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common'
 import { Prisma } from '@prisma/client'
 import * as argon from 'argon2'
-import { Response } from 'express'
 
 import { TokenService } from '~/token'
 import type { JwtPayload } from '~/token/interfaces'
@@ -39,7 +38,9 @@ export class AuthService {
         identifier: user.username
       }
 
-      return { user, payload }
+      const token = await this.tokenService.generateToken(payload)
+
+      return { user, token }
     } catch (error) {
       if (error instanceof UserNotFoundException) {
         throw new UnauthorizedException('Invalid credentials')
@@ -66,7 +67,9 @@ export class AuthService {
         identifier: user.username
       }
 
-      return { user, payload }
+      const token = await this.tokenService.generateToken(payload)
+
+      return { user, token }
     } catch (error) {
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         if (error.code === 'P2002') {
@@ -76,11 +79,5 @@ export class AuthService {
 
       throw error
     }
-  }
-
-  logout(response: Response) {
-    this.tokenService.clearCookie(response)
-
-    return { message: 'Logged out successfully' }
   }
 }

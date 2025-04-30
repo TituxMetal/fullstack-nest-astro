@@ -2,7 +2,6 @@ import { ConflictException, UnauthorizedException } from '@nestjs/common'
 import { Test, type TestingModule } from '@nestjs/testing'
 import { Prisma } from '@prisma/client'
 import * as argon from 'argon2'
-import { type Response } from 'express'
 
 import { TokenService } from '~/token'
 import { UserService } from '~/user'
@@ -26,13 +25,6 @@ const mockPrismaUser: UserEntity = {
   updatedAt: new Date()
 }
 
-const mockResponse = {
-  clearCookie: jest.fn(),
-  cookie: jest.fn(),
-  status: jest.fn().mockReturnThis(),
-  json: jest.fn().mockReturnThis()
-} as unknown as Response
-
 describe('AuthService', () => {
   let service: AuthService
   let userService: jest.Mocked<UserService>
@@ -52,12 +44,8 @@ describe('AuthService', () => {
         {
           provide: TokenService,
           useValue: {
-            clearCookie: () => undefined,
-            generateToken: () => 'token',
-            verifyToken: () => true,
-            getCookieOptions: () => ({}),
-            setCookie: () => undefined,
-            extractTokenFromCookies: () => 'token'
+            generateToken: () => Promise.resolve('token'),
+            verifyToken: () => Promise.resolve(true)
           }
         },
         {
@@ -90,21 +78,24 @@ describe('AuthService', () => {
       password: 'password123'
     }
 
-    it('should return user and payload for valid credentials', async () => {
+    it('should return user and token for valid credentials', async () => {
       const findByEmailOrUsername = jest.fn().mockResolvedValue(mockPrismaUser)
       userService.findByEmailOrUsername = findByEmailOrUsername
       verifyMock.mockResolvedValue(true)
+      const generateToken = jest.fn().mockResolvedValue('token')
+      tokenService.generateToken = generateToken
 
       const result = await service.login(loginDto)
 
       expect(findByEmailOrUsername).toHaveBeenCalledWith(loginDto.identifier)
       expect(verifyMock).toHaveBeenCalledWith(mockPrismaUser.hash, loginDto.password)
+      expect(generateToken).toHaveBeenCalledWith({
+        sub: mockPrismaUser.id,
+        identifier: mockPrismaUser.username
+      })
       expect(result).toEqual({
         user: mockPrismaUser,
-        payload: {
-          sub: mockPrismaUser.id,
-          identifier: mockPrismaUser.username
-        }
+        token: 'token'
       })
     })
 
@@ -150,19 +141,22 @@ describe('AuthService', () => {
       lastName: 'User'
     }
 
-    it('should create a new user and return user with payload', async () => {
+    it('should create a new user and return user with token', async () => {
       const create = jest.fn().mockResolvedValue(mockPrismaUser)
       userService.create = create
+      const generateToken = jest.fn().mockResolvedValue('token')
+      tokenService.generateToken = generateToken
 
       const result = await service.register(registerDto)
 
       expect(create).toHaveBeenCalledWith(registerDto)
+      expect(generateToken).toHaveBeenCalledWith({
+        sub: mockPrismaUser.id,
+        identifier: mockPrismaUser.username
+      })
       expect(result).toEqual({
         user: mockPrismaUser,
-        payload: {
-          sub: mockPrismaUser.id,
-          identifier: mockPrismaUser.username
-        }
+        token: 'token'
       })
     })
 
@@ -177,17 +171,6 @@ describe('AuthService', () => {
 
       await expect(service.register(registerDto)).rejects.toThrow(ConflictException)
       expect(create).toHaveBeenCalledWith(registerDto)
-    })
-  })
-
-  describe('logout', () => {
-    it('should clear auth cookie and return success message', () => {
-      const clearCookie = jest.fn()
-      tokenService.clearCookie = clearCookie
-      const result = service.logout(mockResponse)
-
-      expect(clearCookie).toHaveBeenCalledWith(mockResponse)
-      expect(result).toEqual({ message: 'Logged out successfully' })
     })
   })
 })

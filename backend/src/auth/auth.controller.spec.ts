@@ -1,27 +1,48 @@
 import { Test, type TestingModule } from '@nestjs/testing'
-import { type Response } from 'express'
+import { type CookieOptions, type Response } from 'express'
 
+import { ConfigService } from '~/config'
 import { TokenService } from '~/token'
 
 import { AuthController } from './auth.controller'
 import { AuthService } from './auth.service'
+import type { LoginDto } from './dto/login.dto'
+import type { RegisterDto } from './dto/register.dto'
+
+interface TestResponse extends Response {
+  cookie: (name: string, val: string, options?: CookieOptions) => this
+  clearCookie: (name: string, options?: CookieOptions) => this
+}
 
 describe('AuthController', () => {
   let controller: AuthController
 
-  const mockResponse = {
-    cookie: jest.fn()
-  } as unknown as Response
+  const mockResponse: TestResponse = {
+    cookie: jest.fn((name: string, val: string, options?: CookieOptions) => mockResponse),
+    clearCookie: jest.fn((name: string, options?: CookieOptions) => mockResponse)
+  } as unknown as TestResponse
 
   const mockAuthService = {
     login: jest.fn(),
-    register: jest.fn(),
-    logout: jest.fn()
+    register: jest.fn()
   }
 
   const mockTokenService = {
-    setCookie: jest.fn(),
-    clearCookie: jest.fn()
+    generateToken: jest.fn()
+  }
+
+  const mockConfigService = {
+    jwt: {
+      secret: 'test-secret',
+      expiresIn: '1h'
+    },
+    getCookieOptions: jest.fn().mockReturnValue({
+      name: 'auth',
+      path: '/',
+      httpOnly: true,
+      secure: true,
+      sameSite: 'strict'
+    })
   }
 
   beforeEach(async () => {
@@ -31,7 +52,8 @@ describe('AuthController', () => {
       controllers: [AuthController],
       providers: [
         { provide: AuthService, useValue: mockAuthService },
-        { provide: TokenService, useValue: mockTokenService }
+        { provide: TokenService, useValue: mockTokenService },
+        { provide: ConfigService, useValue: mockConfigService }
       ]
     }).compile()
 
@@ -43,7 +65,7 @@ describe('AuthController', () => {
   })
 
   describe('login', () => {
-    const loginDto = {
+    const loginDto: LoginDto = {
       identifier: 'testuser',
       password: 'password123'
     }
@@ -56,24 +78,26 @@ describe('AuthController', () => {
       lastName: 'User'
     }
 
-    const payload = {
-      sub: user.id,
-      identifier: user.username
-    }
-
     it('should login user and set cookie', async () => {
-      mockAuthService.login.mockResolvedValue({ user, payload })
+      const token = 'test-token'
+      mockAuthService.login.mockResolvedValue({ user, token })
 
       const result = await controller.login(loginDto, mockResponse)
 
       expect(mockAuthService.login).toHaveBeenCalledWith(loginDto)
-      expect(mockTokenService.setCookie).toHaveBeenCalledWith(mockResponse, payload)
+      expect(mockConfigService.getCookieOptions).toHaveBeenCalled()
+      expect(mockResponse.cookie).toHaveBeenCalledWith('auth', token, {
+        path: '/',
+        httpOnly: true,
+        secure: true,
+        sameSite: 'strict'
+      })
       expect(result).toEqual(user)
     })
   })
 
   describe('register', () => {
-    const registerDto = {
+    const registerDto: RegisterDto = {
       email: 'new@example.com',
       username: 'newuser',
       password: 'password123',
@@ -89,31 +113,36 @@ describe('AuthController', () => {
       lastName: 'User'
     }
 
-    const payload = {
-      sub: user.id,
-      identifier: user.username
-    }
-
     it('should register user and set cookie', async () => {
-      mockAuthService.register.mockResolvedValue({ user, payload })
+      const token = 'test-token'
+      mockAuthService.register.mockResolvedValue({ user, token })
 
       const result = await controller.register(registerDto, mockResponse)
 
       expect(mockAuthService.register).toHaveBeenCalledWith(registerDto)
-      expect(mockTokenService.setCookie).toHaveBeenCalledWith(mockResponse, payload)
+      expect(mockConfigService.getCookieOptions).toHaveBeenCalled()
+      expect(mockResponse.cookie).toHaveBeenCalledWith('auth', token, {
+        path: '/',
+        httpOnly: true,
+        secure: true,
+        sameSite: 'strict'
+      })
       expect(result).toEqual(user)
     })
   })
 
   describe('logout', () => {
     it('should clear auth cookie and return success message', () => {
-      const expectedResult = { message: 'Logged out successfully' }
-      mockAuthService.logout.mockReturnValue(expectedResult)
-
       const result = controller.logout(mockResponse)
 
-      expect(mockAuthService.logout).toHaveBeenCalledWith(mockResponse)
-      expect(result).toEqual(expectedResult)
+      expect(mockConfigService.getCookieOptions).toHaveBeenCalled()
+      expect(mockResponse.clearCookie).toHaveBeenCalledWith('auth', {
+        path: '/',
+        httpOnly: true,
+        secure: true,
+        sameSite: 'strict'
+      })
+      expect(result).toEqual({ message: 'Logged out successfully' })
     })
   })
 })

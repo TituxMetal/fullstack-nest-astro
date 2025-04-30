@@ -10,8 +10,8 @@ import {
 } from '@nestjs/common'
 import { Response } from 'express'
 
+import { ConfigService } from '~/config/config.service'
 import { Serialize } from '~/shared/decorators'
-import { TokenService } from '~/token'
 import { UserResponseDto } from '~/user/dto'
 
 import { AuthService } from './auth.service'
@@ -23,7 +23,7 @@ import { LoginDto, RegisterDto } from './dto'
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
-    private readonly tokenService: TokenService
+    private readonly configService: ConfigService
   ) {}
 
   @Post('login')
@@ -32,9 +32,11 @@ export class AuthController {
     @Body() loginDto: LoginDto,
     @Res({ passthrough: true }) response: Response
   ): Promise<UserResponseDto> {
-    const { user, payload } = await this.authService.login(loginDto)
+    const { user, token } = await this.authService.login(loginDto)
 
-    await this.tokenService.setCookie(response, payload)
+    const { name, ...options } = this.configService.getCookieOptions()
+
+    response.cookie(name, token, options)
 
     return user
   }
@@ -45,9 +47,11 @@ export class AuthController {
     @Body() registerDto: RegisterDto,
     @Res({ passthrough: true }) response: Response
   ): Promise<UserResponseDto> {
-    const { user, payload } = await this.authService.register(registerDto)
+    const { user, token } = await this.authService.register(registerDto)
 
-    await this.tokenService.setCookie(response, payload)
+    const { name, ...options } = this.configService.getCookieOptions()
+
+    response.cookie(name, token, options)
 
     return user
   }
@@ -55,6 +59,10 @@ export class AuthController {
   @Post('logout')
   @HttpCode(HttpStatus.OK)
   logout(@Res({ passthrough: true }) response: Response) {
-    return this.authService.logout(response)
+    const { name, ...options } = this.configService.getCookieOptions()
+
+    response.clearCookie(name, options)
+
+    return { message: 'Logged out successfully' }
   }
 }

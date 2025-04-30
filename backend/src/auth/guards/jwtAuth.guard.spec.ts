@@ -3,6 +3,7 @@ import { Reflector } from '@nestjs/core'
 import { Test, type TestingModule } from '@nestjs/testing'
 
 import { IS_PUBLIC_KEY } from '~/auth/decorators'
+import { ConfigService } from '~/config'
 import { TokenService } from '~/token'
 import type { JwtPayload } from '~/token/interfaces'
 
@@ -12,12 +13,24 @@ describe('JwtAuthGuard', () => {
   let guard: JwtAuthGuard
 
   const mockTokenService = {
-    verifyToken: jest.fn(),
-    extractTokenFromCookies: jest.fn()
+    verifyToken: jest.fn()
   }
 
   const mockReflector = {
     getAllAndOverride: jest.fn()
+  }
+
+  const mockConfigService = {
+    jwt: {
+      secret: 'test-secret',
+      expiresIn: '1h'
+    },
+    auth: {
+      cookieName: 'auth_token'
+    },
+    extractTokenFromCookies: jest.fn(
+      (cookies: Record<string, string>) => cookies?.['auth_token'] || null
+    )
   }
 
   beforeEach(async () => {
@@ -25,7 +38,8 @@ describe('JwtAuthGuard', () => {
       providers: [
         JwtAuthGuard,
         { provide: TokenService, useValue: mockTokenService },
-        { provide: Reflector, useValue: mockReflector }
+        { provide: Reflector, useValue: mockReflector },
+        { provide: ConfigService, useValue: mockConfigService }
       ]
     }).compile()
 
@@ -56,7 +70,7 @@ describe('JwtAuthGuard', () => {
 
     it('should throw UnauthorizedException when no token is provided in cookies or headers', async () => {
       mockReflector.getAllAndOverride.mockReturnValue(false)
-      mockTokenService.extractTokenFromCookies.mockReturnValue(null)
+      mockConfigService.extractTokenFromCookies.mockReturnValue(null)
 
       const context = createMockExecutionContext({
         headers: { authorization: undefined },
@@ -70,7 +84,7 @@ describe('JwtAuthGuard', () => {
 
     it('should extract token from cookies when available', async () => {
       mockReflector.getAllAndOverride.mockReturnValue(false)
-      mockTokenService.extractTokenFromCookies.mockReturnValue('cookie-token')
+      mockConfigService.extractTokenFromCookies.mockReturnValue('cookie-token')
 
       const payload: JwtPayload = {
         sub: 'user-id',
@@ -86,7 +100,7 @@ describe('JwtAuthGuard', () => {
 
       const result = await guard.canActivate(context as unknown as ExecutionContext)
 
-      expect(mockTokenService.extractTokenFromCookies).toHaveBeenCalledWith(
+      expect(mockConfigService.extractTokenFromCookies).toHaveBeenCalledWith(
         expect.objectContaining({ auth_token: 'cookie-token' })
       )
       expect(mockTokenService.verifyToken).toHaveBeenCalledWith('cookie-token')
@@ -95,7 +109,7 @@ describe('JwtAuthGuard', () => {
 
     it('should fall back to authorization header when no cookie is present', async () => {
       mockReflector.getAllAndOverride.mockReturnValue(false)
-      mockTokenService.extractTokenFromCookies.mockReturnValue(null)
+      mockConfigService.extractTokenFromCookies.mockReturnValue(null)
 
       const payload: JwtPayload = {
         sub: 'user-id',
@@ -111,14 +125,14 @@ describe('JwtAuthGuard', () => {
 
       const result = await guard.canActivate(context as unknown as ExecutionContext)
 
-      expect(mockTokenService.extractTokenFromCookies).toHaveBeenCalled()
+      expect(mockConfigService.extractTokenFromCookies).toHaveBeenCalled()
       expect(mockTokenService.verifyToken).toHaveBeenCalledWith('header-token')
       expect(result).toBe(true)
     })
 
     it('should throw UnauthorizedException when token is invalid', async () => {
       mockReflector.getAllAndOverride.mockReturnValue(false)
-      mockTokenService.extractTokenFromCookies.mockReturnValue('cookie-token')
+      mockConfigService.extractTokenFromCookies.mockReturnValue('cookie-token')
       mockTokenService.verifyToken.mockRejectedValue(new Error('Invalid token'))
 
       const context = createMockExecutionContext({
@@ -132,6 +146,7 @@ describe('JwtAuthGuard', () => {
 
     it('should return true and attach user to request when token is valid', async () => {
       mockReflector.getAllAndOverride.mockReturnValue(false)
+      mockConfigService.extractTokenFromCookies.mockReturnValue(null)
 
       const payload: JwtPayload = {
         sub: 'user-id',
@@ -154,8 +169,6 @@ describe('JwtAuthGuard', () => {
           reqUserValue = value
         }
       }
-
-      mockTokenService.extractTokenFromCookies.mockReturnValue(null)
 
       const mockHttpContext = {
         getRequest: () => mockRequest
