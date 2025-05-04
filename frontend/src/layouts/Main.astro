@@ -1,6 +1,9 @@
 ---
 import { Icon } from 'astro-icon/components'
 import '~/styles/globals.css'
+
+const { title } = Astro.props
+const { user } = Astro.locals
 ---
 
 <!doctype html>
@@ -10,7 +13,7 @@ import '~/styles/globals.css'
     <meta name='viewport' content='width=device-width' />
     <link rel='icon' type='image/svg+xml' href='/favicon.svg' />
     <meta name='generator' content={Astro.generator} />
-    <title>Fullstack Nest + Astro</title>
+    <title>Fullstack Nest + Astro {title && `| ${title}`}</title>
   </head>
   <body class='min-h-screen'>
     <header
@@ -21,6 +24,20 @@ import '~/styles/globals.css'
           <li>
             <a href='/'>Home</a>
           </li>
+          {user ? (
+            <>
+              <li>
+                {user.username.charAt(0).toUpperCase() + user.username.slice(1)}
+              </li>
+              <li>
+                <a href='/logout'>Logout</a>
+              </li>
+            </>
+          ) : (
+            <li>
+              <a href='/auth'>Login</a>
+            </li>
+          )}
         </ul>
       </nav>
     </header>
