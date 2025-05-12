@@ -1,0 +1,14 @@
+node_modules
+dist
+.astro
+.git
+*.md
+.env
+.env.example
+.gitignore
+.dockerignore
+*.log
+tests
+coverage
+.yarn
+.yarnrc.yml
