@@ -7,12 +7,19 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     include: ['src/**/*.{test,spec}.{ts,tsx}'],
-    setupFiles: ['./vitest.setup.ts']
+    setupFiles: ['./vitest.setup.ts'],
+    environmentOptions: {
+      jsdom: {
+        resources: 'usable'
+      }
+    }
   },
   resolve: {
     alias: {
       '~': path.resolve(__dirname, './src'),
-      '~ui': path.resolve(__dirname, './src/components/ui')
+      '~ui': path.resolve(__dirname, './src/components/ui'),
+      'astro:env/server': '/tests/mocks/astro-env.js',
+      'astro:env/client': '/tests/mocks/astro-env.js'
     }
   }
 })
