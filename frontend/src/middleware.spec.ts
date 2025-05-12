@@ -7,9 +7,6 @@ vi.mock('./services/api.service', () => ({
   apiRequest: vi.fn()
 }))
 
-// Mock environment variables
-vi.stubEnv('API_URL', 'http://localhost:3000/api')
-
 describe('Authentication Middleware', () => {
   beforeEach(() => {
     vi.resetAllMocks()
@@ -73,7 +70,7 @@ describe('Authentication Middleware', () => {
     const result = await onRequest(context, next)
 
     expect(apiService.apiRequest).toHaveBeenCalledWith(
-      'http://localhost:3000/api/users/me',
+      'http://localhost:3000/users/me',
       expect.objectContaining({
         method: 'GET',
         credentials: 'include',

@@ -20,7 +20,7 @@ describe('authenticateUser', () => {
 
     await authenticateUser(mockLoginData, 'login')
 
-    expect(apiService.apiRequest).toHaveBeenCalledWith('http://localhost:3000/auth/login', {
+    expect(apiService.apiRequest).toHaveBeenCalledWith('/api/auth/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -42,7 +42,7 @@ describe('authenticateUser', () => {
 
     await authenticateUser(mockSignupData, 'signup')
 
-    expect(apiService.apiRequest).toHaveBeenCalledWith('http://localhost:3000/auth/register', {
+    expect(apiService.apiRequest).toHaveBeenCalledWith('/api/auth/register', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

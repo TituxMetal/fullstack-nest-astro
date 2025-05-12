@@ -1,3 +1,4 @@
+// import { PUBLIC_API_URL } from 'astro:env/client'
 import type { LoginSchema, SignupSchema } from '~/schemas/auth.schema'
 import { apiRequest } from '~/services/api.service'
 import type { AuthMode } from '~/types/auth.types'
@@ -11,8 +12,11 @@ import type { User } from '~/types/user.types'
  */
 export const authenticateUser = async (data: LoginSchema | SignupSchema, mode: AuthMode) => {
   const endpoint = mode === 'login' ? 'login' : 'register'
+  // const API_URL = PUBLIC_API_URL
+  const API_URL = import.meta.env.PUBLIC_API_URL || '/api'
+  console.log('API_URL in auth.service', API_URL)
 
-  return apiRequest<User>(`http://localhost:3000/auth/${endpoint}`, {
+  return apiRequest<User>(`${API_URL}/auth/${endpoint}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json'

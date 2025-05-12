@@ -1,4 +1,6 @@
 import type { APIContext, MiddlewareNext } from 'astro'
+import { getSecret } from 'astro:env/server'
+// import { PUBLIC_API_URL } from 'astro:env/client'
 import { apiRequest } from './services/api.service'
 import type { User } from './types/user.types'
 
@@ -14,7 +16,9 @@ export const onRequest = async (context: APIContext, next: MiddlewareNext) => {
     return next()
   }
 
-  const API_URL = import.meta.env.API_URL
+  const API_URL = getSecret('API_URL')
+  // const API_URL = PUBLIC_API_URL
+  console.log('API_URL in middleware', API_URL)
 
   try {
     const { success, data, message } = await apiRequest<User>(`${API_URL}/users/me`, {

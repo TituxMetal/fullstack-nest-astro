@@ -1,7 +1,8 @@
 ---
+import { getSecret } from 'astro:env/server'
 import { apiRequest } from '~/services/api.service'
 
-const API_URL = import.meta.env.API_URL
+const API_URL = getSecret('API_URL')
 
 try {
   const { success, message } = await apiRequest(`${API_URL}/auth/logout`, {

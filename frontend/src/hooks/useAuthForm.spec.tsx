@@ -82,7 +82,7 @@ describe('useAuthForm hook', () => {
       const testPassword = 'password123'
 
       // Override the mock for this test to return failure
-      vi.mocked(authService.authenticateUser).mockImplementation(async (data, mode) => ({
+      vi.mocked(authService.authenticateUser).mockImplementation(async (_data, _mode) => ({
         success: false,
         message: 'Invalid credentials'
       }))
