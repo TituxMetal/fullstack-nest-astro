@@ -6,9 +6,14 @@ import { AppModule } from '~/app.module'
 const bootstrap = async () => {
   const app = await NestFactory.create(AppModule)
 
+  const isProduction = process.env.NODE_ENV === 'production'
+  const allowedOrigins = isProduction ? ['https://fab.tuxlab.fr'] : ['http://localhost:4321']
+
   app.enableCors({
-    origin: ['http://localhost:4321', 'http://localhost:3000'],
-    credentials: true
+    origin: allowedOrigins,
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
   })
 
   app.use(cookieParser())

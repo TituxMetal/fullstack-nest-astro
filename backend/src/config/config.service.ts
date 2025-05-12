@@ -30,8 +30,8 @@ export class ConfigService extends NestConfigService<Config, true> {
     return {
       name: this.auth.cookieName,
       httpOnly: true,
-      secure: this.app.isProduction,
-      sameSite: 'lax',
+      secure: this.app.isProduction, // Secure in production
+      sameSite: this.app.isProduction ? 'none' : 'lax', // Cross-origin in prod
       maxAge: this.auth.sessionTtl,
       path: '/'
     }
