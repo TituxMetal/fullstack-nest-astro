@@ -2,6 +2,7 @@
 import { Icon } from 'astro-icon/components'
 import '~/styles/globals.css'
 
+const isProduction = import.meta.env.PROD
 const { title } = Astro.props
 const { user } = Astro.locals
 ---
@@ -14,6 +15,9 @@ const { user } = Astro.locals
     <link rel='icon' type='image/svg+xml' href='/favicon.svg' />
     <meta name='generator' content={Astro.generator} />
     <title>Fullstack Nest + Astro {title && `| ${title}`}</title>
+    {isProduction && (
+      <script is:inline data-domain='fab.tuxlab.fr' src='https://analitycs.tuxlab.fr/js/script.outbound-links.js'></script>
+    )}
   </head>
   <body class='min-h-screen'>
     <header
