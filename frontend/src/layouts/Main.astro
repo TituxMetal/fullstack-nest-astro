@@ -27,7 +27,7 @@ const { user } = Astro.locals
           {user ? (
             <>
               <li>
-                {user.username.charAt(0).toUpperCase() + user.username.slice(1)}
+                <a href='/profile'>{user.username.charAt(0).toUpperCase() + user.username.slice(1)}</a>
               </li>
               <li>
                 <a href='/logout'>Logout</a>
