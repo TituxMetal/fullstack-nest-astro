@@ -1,5 +1,5 @@
 import { Test, type TestingModule } from '@nestjs/testing'
-import { Prisma } from '@prisma/client'
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 import * as argon2 from 'argon2'
 
 import { PrismaService } from '~/prisma'
@@ -207,7 +207,7 @@ describe('UserService', () => {
 
       const spy = jest.spyOn(prismaService.user, 'update')
       spy.mockRejectedValue(
-        new Prisma.PrismaClientKnownRequestError('', { code: 'P2025', clientVersion: '' })
+        new PrismaClientKnownRequestError('', { code: 'P2025', clientVersion: '' })
       )
 
       await expect(service.update('1', updateUserDto)).rejects.toThrow(UserNotFoundException)
@@ -229,7 +229,7 @@ describe('UserService', () => {
     it('should throw UserNotFoundException when user is not found', async () => {
       const spy = jest.spyOn(prismaService.user, 'delete')
       spy.mockRejectedValue(
-        new Prisma.PrismaClientKnownRequestError('', { code: 'P2025', clientVersion: '' })
+        new PrismaClientKnownRequestError('', { code: 'P2025', clientVersion: '' })
       )
 
       await expect(service.remove('1')).rejects.toThrow(UserNotFoundException)

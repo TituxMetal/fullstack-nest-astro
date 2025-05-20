@@ -1,6 +1,6 @@
 import { ConflictException, UnauthorizedException } from '@nestjs/common'
 import { Test, type TestingModule } from '@nestjs/testing'
-import { Prisma } from '@prisma/client'
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 import * as argon from 'argon2'
 
 import { TokenService } from '~/token'
@@ -161,7 +161,7 @@ describe('AuthService', () => {
     })
 
     it('should throw ConflictException when user already exists', async () => {
-      const prismaError = new Prisma.PrismaClientKnownRequestError('Unique constraint violation', {
+      const prismaError = new PrismaClientKnownRequestError('Unique constraint violation', {
         code: 'P2002',
         clientVersion: '5.x',
         meta: { target: ['email'] }
