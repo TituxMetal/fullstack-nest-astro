@@ -18,7 +18,19 @@ export default defineConfig({
           rewrite: path => path.replace(/^\/api/, '')
         }
       }
+    },
+    css: {
+      // Ensure CSS is processed efficiently
+      devSourcemap: false
+    },
+    build: {
+      // Only keep safe CSS optimizations
+      cssCodeSplit: false // Load all CSS together for faster rendering
     }
+  },
+  build: {
+    // Only keep safe build optimizations
+    inlineStylesheets: 'auto'
   },
   output: 'server',
   security: {
