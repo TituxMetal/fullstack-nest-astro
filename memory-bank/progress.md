@@ -17,6 +17,9 @@
 - Docker and Docker Compose configurations are working correctly.
 - Commit message formatting follows conventional commit standards.
 - All core authentication and user management features are complete and functional.
+- **Production FOUC (Flash of Unstyled Content) issues investigated and resolved.**
+- **Build configuration optimized for better CSS loading performance.**
+- **Analytics script properly deferred to prevent layout timing issues.**
 
 ## What's Left to Build
 
@@ -44,6 +47,8 @@
 - Commit message conventions are established and followed.
 - All implemented features have proper test coverage following AAA pattern.
 - The application is ready for production deployment with current feature set.
+- **Production performance optimizations implemented and tested.**
+- **Browser compatibility issues identified and appropriately handled.**
 
 ## Known Issues
 
@@ -53,6 +58,7 @@
 - Docker Compose configuration could be enhanced for development workflows.
 - Some documentation sections could benefit from more detailed troubleshooting guides.
 - .env.example files may not be visible in the repository for security reasons.
+- **Firefox-specific FOUC warning accepted as browser-specific behavior (no UX impact).**
 
 ## Evolution of Project Decisions
 
@@ -72,3 +78,6 @@
 - Properly managed cookie-based authentication across both frontend and backend.
 - Achieved comprehensive test coverage for all implemented features.
 - Established patterns for type-safe API communication and error handling.
+- **Investigated performance optimization approaches and settled on minimal, effective changes.**
+- **Chose clean architecture over inline solutions for maintainability.**
+- **Established pragmatic approach to browser-specific warnings when UX isn't affected.**
