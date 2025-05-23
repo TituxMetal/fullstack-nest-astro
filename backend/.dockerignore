@@ -11,3 +11,4 @@ test
 coverage
 .yarn
 .yarnrc.yml
+src/**/*.spec.*
