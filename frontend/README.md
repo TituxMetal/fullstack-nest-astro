@@ -1,47 +1,90 @@
-# Astro Starter Kit: Minimal
+# Frontend (Astro + React)
 
-```sh
-yarn create astro@latest -- --template minimal
+This is the frontend for the Fullstack Nest + Astro monorepo.
+
+See the [root README](../README.md) for monorepo setup, tech stack, and common workflows.
+
+---
+
+## Features
+
+- **Authentication:** Secure login and registration with JWT stored in HTTP-only cookies
+- **User Profile:** View and edit user profile information
+- **Form Handling:** Type-safe forms with React Hook Form and Zod validation
+- **Component Testing:** Unit tests with React Testing Library following AAA pattern
+
+---
+
+## Directory Structure
+
+```
+src/
+├── assets/        # Static assets (images, icons)
+├── components/    # UI components (React & Astro)
+│   └── ui/        # Reusable UI components
+├── hooks/         # Custom React hooks
+├── layouts/       # Page layout templates
+├── pages/         # Astro pages (file-based routing)
+├── schemas/       # Zod validation schemas
+├── services/      # API services
+├── styles/        # Global styles
+├── types/         # TypeScript types/interfaces
+└── utils/         # Utility functions
 ```
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/astro/tree/latest/examples/minimal)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/withastro/astro/tree/latest/examples/minimal)
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/withastro/astro?devcontainer_path=.devcontainer/minimal/devcontainer.json)
+---
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Pages
 
-## 🚀 Project Structure
+- **`/`**: Homepage
+- **`/auth`**: Authentication page (login/signup)
+  - Query param `?mode=login` or `?mode=signup`
+  - Optional redirect with `?redirectPath=/some-path`
+- **`/profile`**: User profile page (protected)
+- **`/logout`**: Logout and redirect to home
 
-Inside of your Astro project, you'll see the following folders and files:
+---
 
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
+## Development
+
+```bash
+# Install dependencies (from root)
+yarn install
+
+# Start development server
+yarn workspace frontend dev
+
+# Build for production
+yarn workspace frontend build
+
+# Run tests
+yarn workspace frontend test
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+---
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+## Docker
 
-Any static assets, like images, can be placed in the `public/` directory.
+```bash
+# Build Docker image
+yarn workspace frontend docker:build
 
-## 🧞 Commands
+# Push to registry
+yarn workspace frontend docker:push
+```
 
-All commands are run from the root of the project, from a terminal:
+- Dockerfile is in the `/docker/Dockerfile.frontend` file
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `yarn install`             | Installs dependencies                            |
-| `yarn dev`             | Starts local dev server at `localhost:4321`      |
-| `yarn build`           | Build your production site to `./dist/`          |
-| `yarn preview`         | Preview your build locally, before deploying     |
-| `yarn astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `yarn astro -- --help` | Get help using the Astro CLI                     |
+---
 
-## 👀 Want to learn more?
+## Environment
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+The frontend uses environment variables for configuration:
+
+- `API_URL`: Backend URL for server-side requests (server-only)
+- `PUBLIC_API_URL`: API proxy path for client-side requests (e.g., `/api`)
+- Public environment variables (exposed to the browser) use the `PUBLIC_` prefix
+
+---
+
+For more details, see the [root README](../README.md).

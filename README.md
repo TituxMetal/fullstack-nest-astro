@@ -1,86 +1,162 @@
-# Fullstack Nest + Astro
+# Fullstack Nest + Astro Monorepo
 
-Example of a fullstack app using Astro as frontend and NestJs as backend.
+A modern fullstack monorepo using [NestJS](https://nestjs.com/) for the backend and
+[Astro](https://astro.build/) + [React](https://react.dev/) for the frontend. Managed with
+[Turborepo](https://turbo.build/) and [Yarn Workspaces](https://yarnpkg.com/features/workspaces) for
+fast, scalable development.
 
-## Frontend
+---
 
-The frontend is built with Astro 5.6.1, a modern web framework that offers server-side rendering
-capabilities. It's enhanced with React 19.1.0 integration for interactive components.
+## Tech Stack
 
-### Tech Stack
+- **Backend:** NestJS 11, TypeScript, Prisma (SQLite), JWT, argon2, Jest
+- **Frontend:** Astro 5, React 19, TypeScript, TailwindCSS 4, React Hook Form + Zod, Vitest
+- **Monorepo Tooling:** Turborepo, Yarn 4 Workspaces
+- **Containerization:** Docker (monorepo-aware, production-ready)
 
-- **Astro**: Modern web framework with server-side rendering
-- **React**: Library for building interactive UI components
-- **TypeScript**: Strongly-typed JavaScript
-- **TailwindCSS 4.1.3**: Utility-first CSS framework
-- **React Hook Form 7.55.0**: Form handling with Zod validation
-- **Vitest 3.1.1**: Testing framework
+---
 
-### Structure
+## Features
 
-- `/src/assets`: Static assets including icons
-- `/src/components`: Reusable UI components
-- `/src/hooks`: Custom React hooks
-- `/src/layouts`: Page layout templates
-- `/src/pages`: Astro pages and routes
-- `/src/schemas`: Zod validation schemas
-- `/src/services`: API services and data fetching
-- `/src/styles`: Global styles and CSS
-- `/src/types`: TypeScript type definitions
-- `/src/utils`: Utility functions
-- `/src/middleware.ts`: Server middleware functions
+- **Authentication:** JWT-based authentication with secure HTTP-only cookies
+- **User Management:** Registration, login, profile management
+- **Form Validation:** Zod schemas with React Hook Form
+- **Type Safety:** Full TypeScript support across the stack
 
-## Backend
-
-The backend is built with NestJS 11.0.1, a progressive Node.js framework for building efficient and
-scalable server-side applications.
-
-### Tech Stack
-
-- **NestJS**: Progressive Node.js framework
-- **TypeScript**: Strongly-typed JavaScript
-- **Prisma 6.6.0**: Next-generation ORM with type-safety
-- **SQLite**: Database (via Prisma)
-- **JWT**: Authentication strategy using @nestjs/jwt
-- **argon2**: Password hashing
-- **Jest 29.7.0**: Testing framework
-
-### Structure
-
-- `/src/auth`: Authentication related modules
-- `/src/config`: Application configuration
-- `/src/prisma`: Prisma service and database connection
-- `/src/shared`: Shared utilities and services
-- `/src/token`: Token management services
-- `/src/user`: User-related modules and controllers
-
-### Database
-
-- SQLite database with Prisma ORM
-- User model with fields for authentication and profile information
+---
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js
-- Yarn 4.9.1
+- Node.js 20+
+- Yarn 4+
+- Docker (optional, for containerized development)
 
 ### Installation
 
 ```bash
-# Install dependencies for both frontend and backend
+# Clone the repository
+git clone https://github.com/yourusername/fullstack-nest-astro.git
+cd fullstack-nest-astro
+
+# Install dependencies
 yarn install
+
+# Setup database for backend
+yarn workspace backend prisma migrate deploy
 ```
 
 ### Development
 
 ```bash
-# Start backend server
-cd backend
-yarn start:dev
+# Start all apps in development mode
+yarn turbo run dev
 
-# Start frontend development server
-cd frontend
-yarn dev
+# Start only the backend
+yarn workspace backend dev
+
+# Start only the frontend
+yarn workspace frontend dev
 ```
+
+---
+
+## Environment Variables
+
+### Backend
+
+Create a `.env` file in the `backend` directory with:
+
+```bash
+# Server Configuration
+PORT=3000
+NODE_ENV=development
+
+# Database Configuration
+DATABASE_URL="file:./dev.db"
+
+# JWT Configuration
+JWT_SECRET=your_jwt_secret_here
+JWT_EXPIRES_IN=1d
+
+# Cookie Configuration
+AUTH_COOKIE_NAME=auth_token
+SESSION_TTL=86400000
+```
+
+### Frontend
+
+Create a `.env` file in the `frontend` directory with:
+
+```bash
+# For server-side API calls (not exposed to browser)
+API_URL=http://localhost:3000
+
+# For client-side API calls (exposed to browser)
+PUBLIC_API_URL=/api
+```
+
+---
+
+## Project Structure
+
+```
+.
+├── backend/               # NestJS API
+│   ├── prisma/            # Database migrations and schema
+│   └── src/               # Backend source code
+├── frontend/              # Astro + React UI
+│   ├── public/            # Static assets
+│   └── src/               # Frontend source code
+├── docker/                # Docker configuration
+└── memory-bank/           # Project documentation
+```
+
+---
+
+## Docker
+
+Build Docker images:
+
+```bash
+# Build backend
+yarn workspace backend docker:build
+
+# Build frontend
+yarn workspace frontend docker:build
+```
+
+---
+
+## Testing
+
+```bash
+# Run all tests
+yarn turbo run test
+
+# Run backend tests
+yarn workspace backend test
+
+# Run frontend tests
+yarn workspace frontend test
+```
+
+---
+
+## Documentation
+
+See the `memory-bank/` directory for detailed project documentation. Each app also has its own
+README with specific details.
+
+- [Backend README](./backend/README.md)
+- [Frontend README](./frontend/README.md)
+
+---
+
+## Contributing
+
+1. Follow the code style guidelines
+2. Write tests for new features
+3. Use conventional commits for your commit messages
+4. Create pull requests for review
