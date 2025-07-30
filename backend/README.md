@@ -2,7 +2,12 @@
 
 This is the backend API for the Fullstack Nest + Astro monorepo.
 
-See the [root README](../README.md) for monorepo setup, tech stack, and common workflows.
+See the [root README](../../README.md) for monorepo setup, tech stack, and common workflows.
+
+> **Architectural Note:** This backend is currently undergoing a transition to a Clean
+> Architecture + Domain-Driven Design (DDD) structure as outlined in **Epic 2**. The future
+> structure will be organized by bounded contexts (`auth`, `user`, etc.) as defined in
+> [`/docs/architecture/source-tree.md`](../../docs/architecture/source-tree.md).
 
 ---
 
@@ -93,4 +98,4 @@ Required environment variables:
 
 ---
 
-For more details, see the [root README](../README.md).
+For more details, see the [root README](../../README.md).
