@@ -5,6 +5,10 @@ A modern fullstack monorepo using [NestJS](https://nestjs.com/) for the backend 
 [Turborepo](https://turbo.build/) and [Yarn Workspaces](https://yarnpkg.com/features/workspaces) for
 fast, scalable development.
 
+This project follows the **BMAD (Breakthrough Method for Agile Ai Driven Development)** methodology,
+using AI agents for structured development, story management, and code generation. All development
+work is guided by detailed stories and architectural documents located in the `docs/` directory.
+
 ---
 
 ## Tech Stack
@@ -13,15 +17,7 @@ fast, scalable development.
 - **Frontend:** Astro 5, React 19, TypeScript, TailwindCSS 4, React Hook Form + Zod, Vitest
 - **Monorepo Tooling:** Turborepo, Yarn 4 Workspaces
 - **Containerization:** Docker (monorepo-aware, production-ready)
-
----
-
-## Features
-
-- **Authentication:** JWT-based authentication with secure HTTP-only cookies
-- **User Management:** Registration, login, profile management
-- **Form Validation:** Zod schemas with React Hook Form
-- **Type Safety:** Full TypeScript support across the stack
+- **Development Methodology:** BMAD (AI-assisted development)
 
 ---
 
@@ -29,7 +25,7 @@ fast, scalable development.
 
 ### Prerequisites
 
-- Node.js 20+
+- Node.js 22+
 - Yarn 4+
 - Docker (optional, for containerized development)
 
@@ -66,7 +62,7 @@ yarn workspace frontend dev
 
 ### Backend
 
-Create a `.env` file in the `backend` directory with:
+Create a `.env` file in the `apps/backend` directory with:
 
 ```bash
 # Server Configuration
@@ -87,7 +83,7 @@ SESSION_TTL=86400000
 
 ### Frontend
 
-Create a `.env` file in the `frontend` directory with:
+Create a `.env` file in the `apps/frontend` directory with:
 
 ```bash
 # For server-side API calls (not exposed to browser)
@@ -101,17 +97,24 @@ PUBLIC_API_URL=/api
 
 ## Project Structure
 
-```
+The project is organized into `apps` and `packages` to distinguish between deployable applications
+and shared code.
+
+```tree
 .
-├── backend/               # NestJS API
-│   ├── prisma/            # Database migrations and schema
-│   └── src/               # Backend source code
-├── frontend/              # Astro + React UI
-│   ├── public/            # Static assets
-│   └── src/               # Frontend source code
+├── apps/                  # Deployable applications
+│   ├── backend/           # NestJS API
+│   └── frontend/          # Astro + React UI
+├── packages/              # Shared packages (e.g., configs)
+├── docs/                  # Project documentation (PRD, Architecture)
+│   ├── prd/
+│   └── architecture/
 ├── docker/                # Docker configuration
-└── memory-bank/           # Project documentation
+└── ...
 ```
+
+For a detailed view of the project structure, see
+[`docs/architecture/source-tree.md`](./docs/architecture/source-tree.md).
 
 ---
 
@@ -144,19 +147,26 @@ yarn workspace frontend test
 
 ---
 
-## Documentation
+## Documentation & Methodology
 
-See the `memory-bank/` directory for detailed project documentation. Each app also has its own
-README with specific details.
+This project uses the **BMAD (Breakthrough Method for Agile Ai Driven Development)** methodology.
+All project requirements, architecture, and development stories are located in the `docs/`
+directory.
 
-- [Backend README](./backend/README.md)
-- [Frontend README](./frontend/README.md)
+- **Product Requirements:** [`docs/prd.md`](./docs/prd.md)
+- **Architecture:** [`docs/architecture.md`](./docs/architecture.md)
+- **Development Stories:** [`docs/stories/`](./docs/stories/)
+
+Each app also has its own README with specific details:
+
+- [Backend README](./apps/backend/README.md)
+- [Frontend README](./apps/frontend/README.md)
 
 ---
 
 ## Contributing
 
-1. Follow the code style guidelines
-2. Write tests for new features
-3. Use conventional commits for your commit messages
-4. Create pull requests for review
+1. Follow the coding and testing standards defined in `docs/architecture/`.
+2. All work must be done against a story from `docs/stories/`.
+3. Use conventional commits for your commit messages.
+4. Create pull requests for review.
