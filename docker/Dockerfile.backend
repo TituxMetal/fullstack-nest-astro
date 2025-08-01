@@ -8,12 +8,12 @@ RUN corepack enable && corepack prepare yarn@4.9.1 --activate
 RUN echo 'nodeLinker: "node-modules"' > ./.yarnrc.yml
 
 COPY package.json yarn.lock ./
-COPY backend/ ./backend/
-COPY frontend/ ./frontend/
+COPY apps/backend/ ./apps/backend/
+COPY apps/frontend/ ./apps/frontend/
 
 RUN yarn workspace backend install --immutable
 
-WORKDIR /app/backend
+WORKDIR /app/apps/backend
 
 RUN yarn workspace backend prisma generate
 
@@ -29,9 +29,9 @@ RUN echo 'nodeLinker: "node-modules"' > ./.yarnrc.yml
 COPY --from=deps /app/node_modules ./node_modules
 COPY --from=deps /app/package.json ./
 COPY --from=deps /app/yarn.lock ./
-COPY --from=deps /app/backend ./backend/
+COPY --from=deps /app/apps/backend ./apps/backend/
 
-WORKDIR /app/backend
+WORKDIR /app/apps/backend
 
 RUN yarn build
 
@@ -50,15 +50,15 @@ RUN echo 'nodeLinker: "node-modules"' > ./.yarnrc.yml
 # Copy minimal files for production
 COPY --from=build /app/yarn.lock ./
 COPY --from=build /app/package.json ./
-COPY --from=build /app/backend/package.json ./backend/
+COPY --from=build /app/apps/backend/package.json ./apps/backend/
 
 RUN yarn workspaces focus backend --production
 
 # Copy built app, Prisma files and start script
-COPY --from=build /app/backend/dist ./backend/dist
+COPY --from=build /app/apps/backend/dist ./apps/backend/dist
 COPY --from=build /app/node_modules/@prisma ./node_modules/@prisma
 COPY --from=build /app/node_modules/.prisma ./node_modules/.prisma
-COPY --from=build /app/backend/prisma ./backend/prisma
+COPY --from=build /app/apps/backend/prisma ./apps/backend/prisma
 COPY docker/start.sh ./
 
 # Set environment variables for production runtime
