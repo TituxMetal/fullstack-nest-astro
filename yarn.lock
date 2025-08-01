@@ -4866,9 +4866,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"backend@workspace:backend":
+"backend@workspace:apps/backend":
   version: 0.0.0-use.local
-  resolution: "backend@workspace:backend"
+  resolution: "backend@workspace:apps/backend"
   dependencies:
     "@eslint/eslintrc": "npm:^3.3.1"
     "@eslint/js": "npm:^9.27.0"
@@ -7544,9 +7544,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"frontend@workspace:frontend":
+"frontend@workspace:apps/frontend":
   version: 0.0.0-use.local
-  resolution: "frontend@workspace:frontend"
+  resolution: "frontend@workspace:apps/frontend"
   dependencies:
     "@astrojs/check": "npm:^0.9.4"
     "@astrojs/node": "npm:^9.2.2"

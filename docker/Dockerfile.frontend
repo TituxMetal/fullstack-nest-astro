@@ -8,8 +8,8 @@ RUN corepack enable && corepack prepare yarn@4.9.1 --activate
 RUN echo 'nodeLinker: "node-modules"' > ./.yarnrc.yml
 
 COPY package.json yarn.lock ./
-COPY backend/ ./backend/
-COPY frontend/ ./frontend/
+COPY apps/backend/ ./apps/backend/
+COPY apps/frontend/ ./apps/frontend/
 
 # Install all dependencies
 RUN yarn workspace frontend install --immutable
@@ -40,13 +40,13 @@ RUN echo 'nodeLinker: "node-modules"' > ./.yarnrc.yml
 # Copy minimal files for production
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/package.json /app/yarn.lock ./
-COPY --from=build /app/frontend/package.json ./frontend/
+COPY --from=build /app/apps/frontend/package.json ./apps/frontend/
 
 # Install only production dependencies
 RUN yarn workspaces focus frontend --production
 
 # Copy built app
-COPY --from=build /app/frontend/dist ./frontend/dist
+COPY --from=build /app/apps/frontend/dist ./apps/frontend/dist
 
 # Set environment variables for production runtime
 ENV NODE_ENV=production
@@ -61,4 +61,4 @@ EXPOSE ${PORT}
 USER appuser
 
 # Start the application
-CMD ["node", "frontend/dist/server/entry.mjs"]
+CMD ["node", "apps/frontend/dist/server/entry.mjs"]
