@@ -7,75 +7,145 @@ project-root/
 ├── apps/                                    # Epic 1: Deployable applications
 │   ├── backend/                            # NestJS API application
 │   │   ├── src/
-│   │   │   ├── contexts/                   # Epic 2: Clean Architecture + DDD
-│   │   │   │   ├── auth/                   # Auth Bounded Context
-│   │   │   │   │   ├── domain/
-│   │   │   │   │   │   ├── entities/
-│   │   │   │   │   │   │   └── AuthUser.entity.ts
-│   │   │   │   │   │   ├── repositories/
-│   │   │   │   │   │   │   └── AuthUserRepository.ts
-│   │   │   │   │   │   └── valueObjects/
-│   │   │   │   │   │       ├── Email.ts
-│   │   │   │   │   │       └── Password.ts
-│   │   │   │   │   ├── application/
-│   │   │   │   │   │   ├── useCases/
-│   │   │   │   │   │   │   ├── LoginUseCase.ts
-│   │   │   │   │   │   │   ├── RegisterUseCase.ts
-│   │   │   │   │   │   │   └── LogoutUseCase.ts
-│   │   │   │   │   │   ├── dto/
-│   │   │   │   │   │   │   ├── LoginDto.ts
-│   │   │   │   │   │   │   └── RegisterDto.ts
-│   │   │   │   │   │   └── services/
-│   │   │   │   │   │       └── AuthApplicationService.ts
-│   │   │   │   │   └── infrastructure/
-│   │   │   │   │       ├── controllers/
-│   │   │   │   │       │   └── AuthController.ts
-│   │   │   │   │       ├── repositories/
-│   │   │   │   │       │   └── PrismaAuthUserRepository.ts
-│   │   │   │   │       └── adapters/
-│   │   │   │   │           ├── JwtAdapter.ts
-│   │   │   │   │           └── PasswordAdapter.ts
-│   │   │   │   ├── user/                   # User Bounded Context
-│   │   │   │   │   ├── domain/
-│   │   │   │   │   │   ├── entities/
-│   │   │   │   │   │   │   └── UserProfile.entity.ts
-│   │   │   │   │   │   └── repositories/
-│   │   │   │   │   │       └── UserProfileRepository.ts
-│   │   │   │   │   ├── application/
-│   │   │   │   │   │   ├── useCases/
-│   │   │   │   │   │   │   ├── GetUserProfileUseCase.ts
-│   │   │   │   │   │   │   └── UpdateUserProfileUseCase.ts
-│   │   │   │   │   │   ├── dto/
-│   │   │   │   │   │   │   ├── UpdateUserDto.ts
-│   │   │   │   │   │   │   └── UserResponseDto.ts
-│   │   │   │   │   │   └── services/
-│   │   │   │   │   │       └── UserApplicationService.ts
-│   │   │   │   │   └── infrastructure/
-│   │   │   │   │       ├── controllers/
-│   │   │   │   │       │   └── UserController.ts
-│   │   │   │   │       ├── repositories/
-│   │   │   │   │       │   └── PrismaUserProfileRepository.ts
-│   │   │   │   │       └── mappers/
-│   │   │   │   │           └── UserProfileMapper.ts
-│   │   │   │   └── shared/                 # Shared Context
-│   │   │   │       ├── domain/
-│   │   │   │       │   ├── valueObjects/
-│   │   │   │       │   │   ├── UserId.ts
-│   │   │   │       │   │   └── BaseEntity.ts
-│   │   │   │       │   └── exceptions/
-│   │   │   │       │       ├── DomainException.ts
-│   │   │   │       │       └── NotFoundException.ts
-│   │   │   │       └── infrastructure/
-│   │   │   │           ├── database/
-│   │   │   │           │   ├── PrismaService.ts
-│   │   │   │           │   └── PrismaModule.ts
-│   │   │   │           ├── config/
-│   │   │   │           │   ├── ConfigService.ts
-│   │   │   │           │   └── ConfigModule.ts
-│   │   │   │           └── validation/
-│   │   │   │               ├── ValidationPipe.ts
-│   │   │   │               └── SerializationInterceptor.ts
-│   │   │   ├── AppModule.ts               # Root application module
+│   │   │   ├── auth/                       # Epic 2: Auth Module (Clean Architecture)
+│   │   │   │   ├── Auth.module.ts
+│   │   │   │   ├── domain/
+│   │   │   │   │   ├── entities/
+│   │   │   │   │   │   ├── index.ts
+│   │   │   │   │   │   └── AuthUser.entity.ts
+│   │   │   │   │   ├── exceptions/
+│   │   │   │   │   │   ├── index.ts
+│   │   │   │   │   │   └── InvalidCredentials.exception.ts
+│   │   │   │   │   ├── value-objects/
+│   │   │   │   │   │   ├── index.ts
+│   │   │   │   │   │   ├── Email.vo.ts
+│   │   │   │   │   │   └── Password.vo.ts
+│   │   │   │   │   └── repositories/
+│   │   │   │   │       ├── index.ts
+│   │   │   │   │       └── AuthUser.repository.ts
+│   │   │   │   ├── application/
+│   │   │   │   │   ├── use-cases/
+│   │   │   │   │   │   ├── index.ts
+│   │   │   │   │   │   ├── Login.uc.ts
+│   │   │   │   │   │   ├── Register.uc.ts
+│   │   │   │   │   │   └── Logout.uc.ts
+│   │   │   │   │   ├── services/
+│   │   │   │   │   │   ├── index.ts
+│   │   │   │   │   │   └── Auth.service.ts
+│   │   │   │   │   ├── dtos/
+│   │   │   │   │   │   ├── index.ts
+│   │   │   │   │   │   ├── Login.dto.ts
+│   │   │   │   │   │   └── Register.dto.ts
+│   │   │   │   │   ├── mappers/
+│   │   │   │   │   │   ├── index.ts
+│   │   │   │   │   │   └── AuthUser.mapper.ts
+│   │   │   │   │   └── exceptions/
+│   │   │   │   │       ├── index.ts
+│   │   │   │   │       └── ApplicationError.exception.ts
+│   │   │   │   └── infrastructure/
+│   │   │   │       ├── controllers/
+│   │   │   │       │   ├── index.ts
+│   │   │   │       │   └── Auth.controller.ts
+│   │   │   │       ├── repositories/
+│   │   │   │       │   ├── index.ts
+│   │   │   │       │   └── PrismaAuthUser.repository.ts
+│   │   │   │       ├── mappers/
+│   │   │   │       │   ├── index.ts
+│   │   │   │       │   └── AuthUser.mapper.ts
+│   │   │   │       ├── services/
+│   │   │   │       │   ├── index.ts
+│   │   │   │       │   ├── Jwt.service.ts
+│   │   │   │       │   └── Password.service.ts
+│   │   │   │       ├── filters/
+│   │   │   │       │   ├── index.ts
+│   │   │   │       │   └── HttpException.filter.ts
+│   │   │   │       ├── interceptors/
+│   │   │   │       │   ├── index.ts
+│   │   │   │       │   └── Response.interceptor.ts
+│   │   │   │       └── guards/
+│   │   │   │           ├── index.ts
+│   │   │   │           └── JwtAuth.guard.ts
+│   │   │   ├── users/                      # User Module (Clean Architecture)
+│   │   │   │   ├── Users.module.ts
+│   │   │   │   ├── domain/
+│   │   │   │   │   ├── entities/
+│   │   │   │   │   │   ├── index.ts
+│   │   │   │   │   │   └── User.entity.ts
+│   │   │   │   │   ├── value-objects/
+│   │   │   │   │   │   ├── index.ts
+│   │   │   │   │   │   ├── UserProfile.vo.ts
+│   │   │   │   │   │   └── ContactInfo.vo.ts
+│   │   │   │   │   └── repositories/
+│   │   │   │   │       ├── index.ts
+│   │   │   │   │       └── User.repository.ts
+│   │   │   │   ├── application/
+│   │   │   │   │   ├── use-cases/
+│   │   │   │   │   │   ├── index.ts
+│   │   │   │   │   │   ├── GetUserProfile.uc.ts
+│   │   │   │   │   │   └── UpdateUserProfile.uc.ts
+│   │   │   │   │   ├── services/
+│   │   │   │   │   │   ├── index.ts
+│   │   │   │   │   │   └── User.service.ts
+│   │   │   │   │   ├── dtos/
+│   │   │   │   │   │   ├── index.ts
+│   │   │   │   │   │   ├── UpdateUser.dto.ts
+│   │   │   │   │   │   └── UserResponse.dto.ts
+│   │   │   │   │   └── mappers/
+│   │   │   │   │       ├── index.ts
+│   │   │   │   │       └── User.mapper.ts
+│   │   │   │   └── infrastructure/
+│   │   │   │       ├── controllers/
+│   │   │   │       │   ├── index.ts
+│   │   │   │       │   └── User.controller.ts
+│   │   │   │       ├── repositories/
+│   │   │   │       │   ├── index.ts
+│   │   │   │       │   └── PrismaUser.repository.ts
+│   │   │   │       └── mappers/
+│   │   │   │           ├── index.ts
+│   │   │   │           └── User.mapper.ts
+│   │   │   ├── shared/                     # Shared Module
+│   │   │   │   ├── Shared.module.ts
+│   │   │   │   ├── domain/
+│   │   │   │   │   ├── entities/
+│   │   │   │   │   │   ├── index.ts
+│   │   │   │   │   │   └── Base.entity.ts
+│   │   │   │   │   ├── value-objects/
+│   │   │   │   │   │   ├── index.ts
+│   │   │   │   │   │   └── UserId.vo.ts
+│   │   │   │   │   ├── exceptions/
+│   │   │   │   │   │   ├── index.ts
+│   │   │   │   │   │   ├── Domain.exception.ts
+│   │   │   │   │   │   └── NotFound.exception.ts
+│   │   │   │   │   └── repositories/
+│   │   │   │   │       ├── index.ts
+│   │   │   │   │       └── Base.repository.ts
+│   │   │   │   ├── application/
+│   │   │   │   │   ├── use-cases/
+│   │   │   │   │   │   └── index.ts
+│   │   │   │   │   ├── services/
+│   │   │   │   │   │   └── index.ts
+│   │   │   │   │   ├── dtos/
+│   │   │   │   │   │   └── index.ts
+│   │   │   │   │   └── mappers/
+│   │   │   │   │       └── index.ts
+│   │   │   │   └── infrastructure/
+│   │   │   │       ├── controllers/
+│   │   │   │       │   └── index.ts
+│   │   │   │       ├── repositories/
+│   │   │   │       │   └── index.ts
+│   │   │   │       ├── services/
+│   │   │   │       │   ├── index.ts
+│   │   │   │       │   ├── Prisma.service.ts
+│   │   │   │       │   ├── Config.service.ts
+│   │   │   │       │   └── Cache.service.ts
+│   │   │   │       ├── filters/
+│   │   │   │       │   └── index.ts
+│   │   │   │       ├── interceptors/
+│   │   │   │       │   ├── index.ts
+│   │   │   │       │   └── Serialization.interceptor.ts
+│   │   │   │       └── guards/
+│   │   │   │           └── index.ts
+│   │   │   ├── App.module.ts               # Root application module
 │   │   │   └── main.ts                     # Application entry point
 │   │   ├── prisma/
 │   │   │   ├── schema.prisma               # Database schema (unchanged)

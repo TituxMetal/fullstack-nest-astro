@@ -736,74 +736,72 @@ project-root/
 ├── apps/                                    # Epic 1: Deployable applications
 │   ├── backend/                            # NestJS API application
 │   │   ├── src/
-│   │   │   ├── contexts/                   # Epic 2: Clean Architecture + DDD
-│   │   │   │   ├── auth/                   # Auth Bounded Context
-│   │   │   │   │   ├── domain/
-│   │   │   │   │   │   ├── entities/
-│   │   │   │   │   │   │   └── AuthUser.entity.ts
-│   │   │   │   │   │   ├── repositories/
-│   │   │   │   │   │   │   └── AuthUserRepository.ts
-│   │   │   │   │   │   └── valueObjects/
-│   │   │   │   │   │       ├── Email.ts
-│   │   │   │   │   │       └── Password.ts
-│   │   │   │   │   ├── application/
-│   │   │   │   │   │   ├── useCases/
-│   │   │   │   │   │   │   ├── LoginUseCase.ts
-│   │   │   │   │   │   │   ├── RegisterUseCase.ts
-│   │   │   │   │   │   │   └── LogoutUseCase.ts
-│   │   │   │   │   │   ├── dto/
-│   │   │   │   │   │   │   ├── LoginDto.ts
-│   │   │   │   │   │   │   └── RegisterDto.ts
-│   │   │   │   │   │   └── services/
-│   │   │   │   │   │       └── AuthApplicationService.ts
-│   │   │   │   │   └── infrastructure/
-│   │   │   │   │       ├── controllers/
-│   │   │   │   │       │   └── AuthController.ts
-│   │   │   │   │       ├── repositories/
-│   │   │   │   │       │   └── PrismaAuthUserRepository.ts
-│   │   │   │   │       └── adapters/
-│   │   │   │   │           ├── JwtAdapter.ts
-│   │   │   │   │           └── PasswordAdapter.ts
-│   │   │   │   ├── user/                   # User Bounded Context
-│   │   │   │   │   ├── domain/
-│   │   │   │   │   │   ├── entities/
-│   │   │   │   │   │   │   └── UserProfile.entity.ts
-│   │   │   │   │   │   └── repositories/
-│   │   │   │   │   │       └── UserProfileRepository.ts
-│   │   │   │   │   ├── application/
-│   │   │   │   │   │   ├── useCases/
-│   │   │   │   │   │   │   ├── GetUserProfileUseCase.ts
-│   │   │   │   │   │   │   └── UpdateUserProfileUseCase.ts
-│   │   │   │   │   │   ├── dto/
-│   │   │   │   │   │   │   ├── UpdateUserDto.ts
-│   │   │   │   │   │   │   └── UserResponseDto.ts
-│   │   │   │   │   │   └── services/
-│   │   │   │   │   │       └── UserApplicationService.ts
-│   │   │   │   │   └── infrastructure/
-│   │   │   │   │       ├── controllers/
-│   │   │   │   │       │   └── UserController.ts
-│   │   │   │   │       ├── repositories/
-│   │   │   │   │       │   └── PrismaUserProfileRepository.ts
-│   │   │   │   │       └── mappers/
-│   │   │   │   │           └── UserProfileMapper.ts
-│   │   │   │   └── shared/                 # Shared Context
-│   │   │   │       ├── domain/
-│   │   │   │       │   ├── valueObjects/
-│   │   │   │       │   │   ├── UserId.ts
-│   │   │   │       │   │   └── BaseEntity.ts
-│   │   │   │       │   └── exceptions/
-│   │   │   │       │       ├── DomainException.ts
-│   │   │   │       │       └── NotFoundException.ts
-│   │   │   │       └── infrastructure/
-│   │   │   │           ├── database/
-│   │   │   │           │   ├── PrismaService.ts
-│   │   │   │           │   └── PrismaModule.ts
-│   │   │   │           ├── config/
-│   │   │   │           │   ├── ConfigService.ts
-│   │   │   │           │   └── ConfigModule.ts
-│   │   │   │           └── validation/
-│   │   │   │               ├── ValidationPipe.ts
-│   │   │   │               └── SerializationInterceptor.ts
+│   │   │   ├── auth/                       # Auth Module (Clean Architecture)
+│   │   │   │   ├── Auth.module.ts
+│   │   │   │   ├── domain/
+│   │   │   │   │   ├── entities/
+│   │   │   │   │   │   └── AuthUser.entity.ts
+│   │   │   │   │   ├── repositories/
+│   │   │   │   │   │   └── AuthUser.repository.ts
+│   │   │   │   │   └── value-objects/
+│   │   │   │   │       ├── Email.vo.ts
+│   │   │   │   │       └── Password.vo.ts
+│   │   │   │   ├── application/
+│   │   │   │   │   ├── use-cases/
+│   │   │   │   │   │   ├── Login.uc.ts
+│   │   │   │   │   │   ├── Register.uc.ts
+│   │   │   │   │   │   └── Logout.uc.ts
+│   │   │   │   │   ├── dtos/
+│   │   │   │   │   │   ├── Login.dto.ts
+│   │   │   │   │   │   └── Register.dto.ts
+│   │   │   │   │   └── services/
+│   │   │   │   │       └── Auth.service.ts
+│   │   │   │   └── infrastructure/
+│   │   │   │       ├── controllers/
+│   │   │   │       │   └── Auth.controller.ts
+│   │   │   │       ├── repositories/
+│   │   │   │       │   └── PrismaAuthUser.repository.ts
+│   │   │   │       └── services/
+│   │   │   │           ├── Jwt.service.ts
+│   │   │   │           └── Password.service.ts
+│   │   │   ├── users/                      # User Module (Clean Architecture)
+│   │   │   │   ├── Users.module.ts
+│   │   │   │   ├── domain/
+│   │   │   │   │   ├── entities/
+│   │   │   │   │   │   └── User.entity.ts
+│   │   │   │   │   └── repositories/
+│   │   │   │   │       └── User.repository.ts
+│   │   │   │   ├── application/
+│   │   │   │   │   ├── use-cases/
+│   │   │   │   │   │   ├── GetUserProfile.uc.ts
+│   │   │   │   │   │   └── UpdateUserProfile.uc.ts
+│   │   │   │   │   ├── dtos/
+│   │   │   │   │   │   ├── UpdateUser.dto.ts
+│   │   │   │   │   │   └── UserResponse.dto.ts
+│   │   │   │   │   └── services/
+│   │   │   │   │       └── User.service.ts
+│   │   │   │   └── infrastructure/
+│   │   │   │       ├── controllers/
+│   │   │   │       │   └── User.controller.ts
+│   │   │   │       ├── repositories/
+│   │   │   │       │   └── PrismaUser.repository.ts
+│   │   │   │       └── mappers/
+│   │   │   │           └── User.mapper.ts
+│   │   │   ├── shared/                     # Shared Module (Clean Architecture)
+│   │   │   │   ├── Shared.module.ts
+│   │   │   │   ├── domain/
+│   │   │   │   │   ├── value-objects/
+│   │   │   │   │   │   ├── UserId.vo.ts
+│   │   │   │   │   │   └── Base.entity.ts
+│   │   │   │   │   └── exceptions/
+│   │   │   │   │       ├── Domain.exception.ts
+│   │   │   │   │       └── NotFound.exception.ts
+│   │   │   │   └── infrastructure/
+│   │   │   │       ├── services/
+│   │   │   │       │   ├── Prisma.service.ts
+│   │   │   │       │   └── Config.service.ts
+│   │   │   │       └── interceptors/
+│   │   │   │           └── Serialization.interceptor.ts
 │   │   │   ├── AppModule.ts               # Root application module
 │   │   │   └── main.ts                     # Application entry point
 │   │   ├── prisma/
@@ -1087,8 +1085,8 @@ import { useAuthForm } from '~/hooks/useAuthForm'
 import { authenticateUser } from '~/services/auth.service'
 
 // Epic 2 Clean Architecture with ~/paths
-import { AuthUser } from '~/contexts/auth/domain/entities/AuthUser.entity'
-import { LoginUseCase } from '~/contexts/auth/application/useCases/LoginUseCase'
+import { AuthUserEntity } from '~/auth/domain/entities'
+import { LoginUseCase } from '~/auth/application/use-cases'
 
 // Epic 3 Frontend reorganization with ~/paths
 import { AuthForm } from '~/components/forms/AuthForm'
@@ -1114,10 +1112,10 @@ import { authSchema } from '~/lib/schemas/AuthSchema'
 
 ```typescript
 // ✅ CORRECT - Domain layer using path alias
-import { UserId } from '~/contexts/shared/domain/valueObjects/UserId'
+import { UserIdValueObject } from '~/shared/domain/value-objects'
 
 // ❌ WRONG - Domain importing infrastructure
-import { PrismaService } from '~/contexts/shared/infrastructure/database/PrismaService'
+import { PrismaService } from '~/shared/infrastructure/services'
 ```
 
 **Repository Pattern Compliance:**
@@ -1134,10 +1132,11 @@ const user = await this.prisma.user.findUnique({ where: { id } })
 
 ```typescript
 // ✅ CORRECT - Each context uses its own path
-import { AuthUser } from '~/contexts/auth/domain/entities/AuthUser.entity'
+import { AuthUserEntity } from '~/auth/domain/entities'
+import { IAuthUserRepository } from '~/auth/domain/repositories'
 
-// ❌ WRONG - Cross-context direct imports
-import { UserProfile } from '~/contexts/user/domain/entities/UserProfile.entity' // in auth context
+// ❌ WRONG - Direct cross-module imports (use shared module instead)
+import { UserEntity } from '~/users/domain/entities' // in auth module
 ```
 
 ## Test Strategy and Standards

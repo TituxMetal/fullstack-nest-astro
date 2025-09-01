@@ -251,26 +251,31 @@ breaking existing functionality**.
 
 **Acceptance Criteria:**
 
-1. **AC2.1.1**: Create `apps/backend/src/contexts/` directory structure:
+1. **AC2.1.1**: Create Clean Architecture structure directly in `apps/backend/src/` with feature
+   modules:
 
    ```tree
-   contexts/
+   src/
    ├── auth/
+   │   ├── Auth.module.ts
    │   ├── domain/
    │   ├── application/
    │   └── infrastructure/
-   ├── user/
+   ├── users/
+   │   ├── Users.module.ts
    │   ├── domain/
    │   ├── application/
    │   └── infrastructure/
    └── shared/
+       ├── Shared.module.ts
        ├── domain/
+       ├── application/
        └── infrastructure/
    ```
 
-2. **AC2.1.2**: Add architectural documentation in `apps/backend/docs/architecture.md` explaining
-   Clean Architecture + DDD principles
-3. **AC2.1.3**: Create template files showing expected patterns for each layer
+2. **AC2.1.2**: Update architectural documentation in `docs/architecture/` explaining Clean
+   Architecture + DDD principles with naming conventions
+3. **AC2.1.3**: Each sub-folder in every layer must have an index.ts barrel file for exports
 4. **AC2.1.4**: All existing modules (`auth/`, `user/`, etc.) remain untouched and functional
 
 **Integration Verification:**
@@ -289,18 +294,26 @@ while maintaining all functionality**.
 **Acceptance Criteria:**
 
 1. **AC2.2.1**: Create auth domain layer:
-   - `contexts/auth/domain/entities/` (User entity for auth purposes)
-   - `contexts/auth/domain/value-objects/` (Email, Password value objects)
-   - `contexts/auth/domain/repositories/` (Auth repository interfaces)
+   - `auth/domain/entities/` (AuthUser.entity.ts with AuthUserEntity class)
+   - `auth/domain/value-objects/` (Email.vo.ts, Password.vo.ts with ValueObject classes)
+   - `auth/domain/repositories/` (AuthUser.repository.ts with IAuthUserRepository interface)
+   - `auth/domain/exceptions/` (domain exceptions)
+   - Each folder must have index.ts barrel file
 2. **AC2.2.2**: Create auth application layer:
-   - `contexts/auth/application/use-cases/` (LoginUseCase, RegisterUseCase, LogoutUseCase)
-   - `contexts/auth/application/dto/` (moved from current auth/dto/)
-   - `contexts/auth/application/services/` (AuthApplicationService)
+   - `auth/application/use-cases/` (Login.uc.ts, Register.uc.ts, Logout.uc.ts)
+   - `auth/application/dtos/` (Login.dto.ts, Register.dto.ts)
+   - `auth/application/services/` (Auth.service.ts)
+   - `auth/application/mappers/` (DTO <> Domain mapping)
+   - Each folder must have index.ts barrel file
 3. **AC2.2.3**: Create auth infrastructure layer:
-   - `contexts/auth/infrastructure/repositories/` (AuthRepository implementation)
-   - `contexts/auth/infrastructure/adapters/` (JWT, password hashing)
-   - `contexts/auth/infrastructure/controllers/` (moved from auth.controller.ts)
-4. **AC2.2.4**: Update auth module imports and dependency injection
+   - `auth/infrastructure/repositories/` (PrismaAuthUser.repository.ts)
+   - `auth/infrastructure/services/` (Jwt.service.ts, Password.service.ts)
+   - `auth/infrastructure/controllers/` (Auth.controller.ts)
+   - `auth/infrastructure/guards/` (JwtAuth.guard.ts)
+   - `auth/infrastructure/mappers/` (Persistence <> Domain mapping)
+   - Each folder must have index.ts barrel file
+4. **AC2.2.4**: Create Auth.module.ts at auth root, configure dependency injection with proper
+   providers
 5. **AC2.2.5**: Remove original `auth/` directory after successful migration
 
 **Integration Verification:**
@@ -320,19 +333,22 @@ preserving all existing functionality**.
 **Acceptance Criteria:**
 
 1. **AC2.3.1**: Create user domain layer:
-   - `contexts/user/domain/entities/User.ts` (rich domain entity)
-   - `contexts/user/domain/value-objects/` (UserProfile, ContactInfo)
-   - `contexts/user/domain/repositories/UserRepository.ts` (interface)
+   - `users/domain/entities/User.entity.ts` (export class UserEntity)
+   - `users/domain/value-objects/` (UserProfile.vo.ts, ContactInfo.vo.ts)
+   - `users/domain/repositories/User.repository.ts` (export interface IUserRepository)
+   - Each folder must have index.ts barrel file
 2. **AC2.3.2**: Create user application layer:
-   - `contexts/user/application/use-cases/` (GetUserProfile, UpdateUserProfile)
-   - `contexts/user/application/dto/` (moved from current user/dto/)
-   - `contexts/user/application/services/UserApplicationService.ts`
+   - `users/application/use-cases/` (GetUserProfile.uc.ts, UpdateUserProfile.uc.ts)
+   - `users/application/dtos/` (UpdateUser.dto.ts, UserResponse.dto.ts)
+   - `users/application/services/User.service.ts`
+   - Each folder must have index.ts barrel file
 3. **AC2.3.3**: Create user infrastructure layer:
-   - `contexts/user/infrastructure/repositories/PrismaUserRepository.ts`
-   - `contexts/user/infrastructure/controllers/` (moved from user.controller.ts)
-   - `contexts/user/infrastructure/mappers/` (domain ↔ persistence mapping)
-4. **AC2.3.4**: Update user module configuration and dependency injection
-5. **AC2.3.5**: Remove original `user/` directory after successful migration
+   - `users/infrastructure/repositories/PrismaUser.repository.ts`
+   - `users/infrastructure/controllers/User.controller.ts`
+   - `users/infrastructure/mappers/User.mapper.ts`
+   - Each folder must have index.ts barrel file
+4. **AC2.3.4**: Create Users.module.ts at users root, configure dependency injection
+5. **AC2.3.5**: Remove original `user/` directory, keep only new structure
 
 **Integration Verification:**
 
@@ -350,17 +366,18 @@ maintaining functionality**.
 
 **Acceptance Criteria:**
 
-1. **AC2.4.1**: Move shared infrastructure:
-   - `contexts/shared/infrastructure/database/` (Prisma service and module)
-   - `contexts/shared/infrastructure/config/` (moved from config/)
-   - `contexts/shared/infrastructure/validation/` (moved from shared/validation/)
-   - `contexts/shared/infrastructure/serialization/` (moved from shared/interceptors/)
-2. **AC2.4.2**: Move shared domain:
-   - `contexts/shared/domain/events/` (for future domain events)
-   - `contexts/shared/domain/exceptions/` (custom exceptions)
-   - `contexts/shared/domain/value-objects/` (common value objects)
-3. **AC2.4.3**: Update token service as shared infrastructure
-4. **AC2.4.4**: Update all context modules to use shared infrastructure
+1. **AC2.4.1**: Create shared infrastructure:
+   - `shared/infrastructure/services/` (Prisma.service.ts, Config.service.ts)
+   - `shared/infrastructure/interceptors/` (Serialization.interceptor.ts)
+   - `shared/infrastructure/filters/` (exception filters)
+   - Each folder must have index.ts barrel file
+2. **AC2.4.2**: Create shared domain:
+   - `shared/domain/entities/Base.entity.ts` (base entity class)
+   - `shared/domain/exceptions/` (Domain.exception.ts, NotFound.exception.ts)
+   - `shared/domain/value-objects/` (UserId.vo.ts and common value objects)
+   - Each folder must have index.ts barrel file
+3. **AC2.4.3**: Create Shared.module.ts at shared root
+4. **AC2.4.4**: Update all modules to use shared infrastructure via dependency injection
 5. **AC2.4.5**: Remove original `shared/`, `config/`, `prisma/`, `token/` directories
 
 **Integration Verification:**
@@ -379,11 +396,12 @@ structure**.
 
 **Acceptance Criteria:**
 
-1. **AC2.5.1**: Update `app.module.ts` to import context modules instead of feature modules
+1. **AC2.5.1**: Update `App.module.ts` to import new Clean Architecture modules (Auth.module,
+   Users.module, Shared.module)
 2. **AC2.5.2**: Configure dependency injection for new architecture layers
 3. **AC2.5.3**: Update `main.ts` if needed for new module structure
 4. **AC2.5.4**: Update all import paths throughout the application
-5. **AC2.5.5**: Verify no circular dependencies exist in new structure
+5. **AC2.5.5**: Verify barrel files prevent circular dependencies
 
 **Integration Verification:**
 
