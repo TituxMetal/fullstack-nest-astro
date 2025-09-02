@@ -12,8 +12,8 @@ import {
   ValidationPipe
 } from '@nestjs/common'
 
-import { GetCurrentUser } from '~/auth/decorators'
-import { JwtAuthGuard } from '~/auth/guards'
+import { GetCurrentUser } from '~/auth/infrastructure/decorators'
+import { JwtAuthGuard } from '~/auth/infrastructure/guards'
 import { Serialize } from '~/shared/decorators'
 
 import { CreateUserDto, UpdateUserDto, UserResponseDto } from './dto'

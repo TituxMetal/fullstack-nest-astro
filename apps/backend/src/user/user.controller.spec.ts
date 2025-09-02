@@ -1,6 +1,7 @@
 import { Reflector } from '@nestjs/core'
 import { Test, type TestingModule } from '@nestjs/testing'
 
+import { JwtService } from '~/auth/infrastructure/services'
 import { ConfigService } from '~/config'
 import { TokenService } from '~/token'
 
@@ -22,6 +23,12 @@ describe('UserController', () => {
 
   const mockTokenService = {
     verifyToken: jest.fn()
+  }
+
+  const mockJwtService = {
+    generateToken: jest.fn(),
+    verifyToken: jest.fn(),
+    decodeToken: jest.fn()
   }
 
   const mockConfigService = {
@@ -52,6 +59,10 @@ describe('UserController', () => {
         {
           provide: ConfigService,
           useValue: mockConfigService
+        },
+        {
+          provide: JwtService,
+          useValue: mockJwtService
         },
         Reflector
       ]
