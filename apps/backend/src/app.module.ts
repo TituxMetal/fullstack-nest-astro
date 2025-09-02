@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common'
 import { ConfigModule } from '@nestjs/config'
 
+import { AuthModule } from '~/auth/Auth.module'
 import { PrismaModule } from '~/prisma'
 import { UserModule } from '~/user'
 
-import { AuthModule } from './auth/auth.module'
 import { TokenModule } from './token/token.module'
 
 @Module({
