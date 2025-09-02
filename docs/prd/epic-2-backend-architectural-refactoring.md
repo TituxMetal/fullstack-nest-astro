@@ -86,89 +86,133 @@ while maintaining all functionality**.
 - **IV2.2.4**: JWT authentication middleware functions normally
 - **IV2.2.5**: All auth-related tests pass with updated imports
 
-## **Story 2.3: Refactor User Bounded Context to Clean Architecture**
+## **Story 2.3: Refactor Users Bounded Context to Clean Architecture**
 
-As a **developer working with user management features**, I want **the user module restructured
-using Clean Architecture patterns**, so that **user business logic is cleanly separated while
-preserving all existing functionality**.
-
-**Acceptance Criteria:**
-
-1. **AC2.3.1**: Create user domain layer:
-   - `users/domain/entities/User.entity.ts` (export class UserEntity)
-   - `users/domain/value-objects/` (UserProfile.vo.ts, ContactInfo.vo.ts)
-   - `users/domain/repositories/User.repository.ts` (export interface IUserRepository)
-   - Each folder must have index.ts barrel file
-2. **AC2.3.2**: Create user application layer:
-   - `users/application/use-cases/` (GetUserProfile.uc.ts, UpdateUserProfile.uc.ts)
-   - `users/application/dtos/` (UpdateUser.dto.ts, UserResponse.dto.ts)
-   - `users/application/services/User.service.ts`
-   - Each folder must have index.ts barrel file
-3. **AC2.3.3**: Create user infrastructure layer:
-   - `users/infrastructure/repositories/PrismaUser.repository.ts`
-   - `users/infrastructure/controllers/User.controller.ts`
-   - `users/infrastructure/mappers/User.mapper.ts`
-   - Each folder must have index.ts barrel file
-4. **AC2.3.4**: Create Users.module.ts at users root, configure dependency injection
-5. **AC2.3.5**: Remove original `user/` directory, keep only new structure
-
-**Integration Verification:**
-
-- **IV2.3.1**: GET `/users/me` endpoint returns identical response structure
-- **IV2.3.2**: PUT `/users/me` endpoint accepts same input and returns same output
-- **IV2.3.3**: User profile page continues to work without frontend changes
-- **IV2.3.4**: All user-related tests pass with updated imports
-- **IV2.3.5**: Authentication integration with user data remains functional
-
-## **Story 2.4: Refactor Shared Infrastructure and Cross-Cutting Concerns**
-
-As a **developer working with shared backend services**, I want **shared services and infrastructure
-moved to the shared context**, so that **cross-cutting concerns are properly organized while
-maintaining functionality**.
+As a **developer working with user profile features**, I want **the users module restructured using
+Clean Architecture patterns**, so that **users profile business logic is separated from
+infrastructure concerns while maintaining all functionality**.
 
 **Acceptance Criteria:**
 
-1. **AC2.4.1**: Create shared infrastructure:
-   - `shared/infrastructure/services/` (Prisma.service.ts, Config.service.ts)
-   - `shared/infrastructure/interceptors/` (Serialization.interceptor.ts)
-   - `shared/infrastructure/filters/` (exception filters)
-   - Each folder must have index.ts barrel file
-2. **AC2.4.2**: Create shared domain:
-   - `shared/domain/entities/Base.entity.ts` (base entity class)
-   - `shared/domain/exceptions/` (Domain.exception.ts, NotFound.exception.ts)
-   - `shared/domain/value-objects/` (UserId.vo.ts and common value objects)
-   - Each folder must have index.ts barrel file
-3. **AC2.4.3**: Create Shared.module.ts at shared root
-4. **AC2.4.4**: Update all modules to use shared infrastructure via dependency injection
-5. **AC2.4.5**: Remove original `shared/`, `config/`, `prisma/`, `token/` directories
+1. **AC2.3.1**: Create users domain layer: `users/domain/entities/` (User.entity.ts with UserEntity
+   class), `users/domain/value-objects/` (UserId.vo.ts with UserIdValueObject, Username.vo.ts with
+   UsernameValueObject, Name.vo.ts with NameValueObject), `users/domain/repositories/`
+   (User.repository.ts with IUserRepository interface), `users/domain/exceptions/`
+   (UserNotFound.exception.ts, InvalidUser.exception.ts), with index.ts barrel files in each folder
+
+2. **AC2.3.2**: Create users application layer: `users/application/use-cases/` (GetUserProfile.uc.ts
+   with GetUserProfileUseCase, UpdateUserProfile.uc.ts with UpdateUserProfileUseCase,
+   DeleteUserAccount.uc.ts with DeleteUserAccountUseCase, CreateUser.uc.ts with CreateUserUseCase,
+   GetAllUsers.uc.ts with GetAllUsersUseCase), `users/application/dtos/` (GetUserProfile.dto.ts,
+   UpdateUserProfile.dto.ts, CreateUser.dto.ts with DTOs), `users/application/services/`
+   (User.service.ts with UserService), `users/application/mappers/` (User.mapper.ts), with index.ts
+   barrel files in each folder
+
+3. **AC2.3.3**: Create users infrastructure layer: `users/infrastructure/repositories/`
+   (PrismaUser.repository.ts implementing IUserRepository), `users/infrastructure/controllers/`
+   (User.controller.ts), `users/infrastructure/mappers/` (User.mapper.ts), with index.ts barrel files
+   in each folder
+
+4. **AC2.3.4**: Create Users.module.ts at root of users folder, configure dependency injection with
+   proper providers for repositories and use cases using NestJS patterns
+
+5. **AC2.3.5**: Remove original user/ directory structure after successful migration, preserving
+   only new Clean Architecture structure in users/ directory
 
 **Integration Verification:**
 
-- **IV2.4.1**: Database connections and Prisma operations work normally
-- **IV2.4.2**: Configuration loading functions correctly
-- **IV2.4.3**: JWT token generation and validation continues working
-- **IV2.4.4**: Request validation and serialization work unchanged
-- **IV2.4.5**: All integration tests pass
+- **IV2.3.1**: GET `/users/me` endpoint works identically
+- **IV2.3.2**: PATCH `/users/me` endpoint works identically  
+- **IV2.3.3**: DELETE `/users/me` endpoint works identically
+- **IV2.3.4**: POST `/users` endpoint works identically
+- **IV2.3.5**: GET `/users` endpoint works identically
+- **IV2.3.6**: All user-related tests pass with updated imports
 
-## **Story 2.5: Update Application Module and Finalize Architecture**
+## **Story 2.4: Dissolve Token Module into Auth Infrastructure**
 
-As a **developer working with the application startup**, I want **the main app module updated to use
-the new architecture**, so that **the application boots correctly with the new Clean Architecture
-structure**.
+As a **developer working on the authentication system**, I want **the Token module dissolved and its
+functionality moved into the Auth module infrastructure**, so that **we eliminate architectural debt
+and maintain proper bounded context boundaries**.
 
 **Acceptance Criteria:**
 
-1. **AC2.5.1**: Update `App.module.ts` to import new Clean Architecture modules (Auth.module,
-   Users.module, Shared.module)
-2. **AC2.5.2**: Configure dependency injection for new architecture layers
-3. **AC2.5.3**: Update `main.ts` if needed for new module structure
-4. **AC2.5.4**: Update all import paths throughout the application
-5. **AC2.5.5**: Verify barrel files prevent circular dependencies
+1. **AC2.4.1**: Move TokenService functionality to `auth/infrastructure/services/Token.service.ts`
+   with class name TokenService (not JwtService to avoid naming conflicts), including
+   `generateToken()` and `verifyToken()` methods with identical signatures and behavior
+
+2. **AC2.4.2**: Move JwtPayload interface to `auth/domain/value-objects/JwtPayload.vo.ts` with class
+   name JwtPayloadValueObject containing validation logic, and create corresponding interface
+   IJwtPayload for type definitions
+
+3. **AC2.4.3**: Update Auth.module.ts to include JwtModule configuration previously in TokenModule,
+   ensuring proper ConfigService injection for JWT secret and expiration settings
+
+4. **AC2.4.4**: Update all imports across the codebase: change "~/token" imports to
+   "~/auth/infrastructure/services" for TokenService and "~/auth/domain/value-objects" for JWT
+   payload types
+
+5. **AC2.4.5**: Remove token/ directory completely after successful migration, including
+   token.module.ts, token.service.ts, token.service.spec.ts, interfaces/, and index.ts
 
 **Integration Verification:**
 
-- **IV2.5.1**: Application starts successfully with new architecture
-- **IV2.5.2**: All API endpoints respond correctly
-- **IV2.5.3**: Authentication and user management flows work end-to-end
-- **IV2.5.4**: All unit and integration tests pass
-- **IV2.5.5**: Frontend integration remains unaffected
+- **IV2.4.1**: JWT token generation works identically via Auth module
+- **IV2.4.2**: JWT token verification works identically via Auth module
+- **IV2.4.3**: All auth endpoints continue to function normally
+- **IV2.4.4**: User controller authentication continues to work
+- **IV2.4.5**: All existing tests pass with updated imports
+
+## **Story 2.5: Infrastructure Foundation - Repository Patterns and Database Abstraction**
+
+As a **developer working with any data access layer**, I want **a standardized repository
+abstraction layer with base interfaces and common patterns**, so that **all modules can use
+consistent data access patterns while maintaining Clean Architecture separation and enabling future
+database changes**.
+
+**Acceptance Criteria:**
+
+1. **AC2.5.1**: Move Prisma infrastructure to `shared/infrastructure/database/` (PrismaService,
+   PrismaModule), create `shared/infrastructure/database/Database.module.ts` that exports
+   PrismaService, and update all existing imports to use shared location
+
+2. **AC2.5.2**: Create `shared/domain/repositories/BaseRepository.interface.ts` with generic
+   `IRepository<TEntity, TId>` interface containing standard CRUD operations: findById, findAll,
+   save, update, delete, exists methods with proper typing
+
+3. **AC2.5.3**: Create `shared/infrastructure/repositories/BaseRepository.abstract.ts` with abstract
+   `BaseRepository<TEntity, TId, TPersistence>` class implementing common CRUD operations using
+   Prisma, with abstract methods for mapping (mapToDomain, mapToPersistence)
+
+4. **AC2.5.4**: Create `shared/infrastructure/database/UnitOfWork.service.ts` with UnitOfWorkService
+   implementing transaction management, batch operations, and commit/rollback functionality using
+   Prisma transactions
+
+5. **AC2.5.5**: Create `shared/infrastructure/repositories/RepositoryFactory.service.ts` with
+   RepositoryFactoryService for dynamic repository creation and dependency injection management
+
+6. **AC2.5.6**: Update existing PrismaAuthUserRepository to extend BaseRepository and verify all
+   auth functionality continues to work identically, update imports across codebase to use shared
+   infrastructure
+
+**Integration Verification:**
+
+- **IV2.5.1**: All existing auth endpoints work identically with new repository foundation
+- **IV2.5.2**: Database operations maintain same performance characteristics
+- **IV2.5.3**: All existing tests pass with updated imports and base repository
+- **IV2.5.4**: Transaction management works correctly with unit of work pattern
+- **IV2.5.5**: Repository factory can create and manage repository instances correctly
+
+## Epic Revision History
+
+**2025-09-02**: Stories 2.3, 2.4, and 2.5 updated based on QA findings from Story 2.2 implementation
+and architectural debt analysis documented in ADR-001. The original epic stories were replaced with
+the actual stories created to address critical architectural issues discovered during Story 2.2 QA
+review:
+
+- **Story 2.3**: Updated to reflect Users module Clean Architecture refactoring per QA recommendations (corrected to plural naming per DDD/Clean Architecture best practices)
+- **Story 2.4**: Replaced with Token module dissolution into Auth infrastructure (critical
+  architectural debt)
+- **Story 2.5**: Replaced with Infrastructure Foundation and Repository Pattern implementation
+  (foundational requirement)
+
+See [ADR-001: Backend Clean Architecture Refactoring Strategy](../architecture/adr/001-backend-clean-architecture-refactoring.md) for detailed analysis and rationale.
