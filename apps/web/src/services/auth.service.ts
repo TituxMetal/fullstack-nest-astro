@@ -17,9 +17,10 @@ export const authenticateUser = async (data: LoginSchema | SignupSchema, mode: A
   console.log('API_URL in auth.service', API_URL)
 
   // Transform the data for login to match backend expectations
-  const requestData = mode === 'login' && 'identifier' in data 
-    ? { emailOrUsername: data.identifier, password: data.password }
-    : data
+  const requestData =
+    mode === 'login' && 'identifier' in data
+      ? { emailOrUsername: data.identifier, password: data.password }
+      : data
 
   return apiRequest<User>(`${API_URL}/auth/${endpoint}`, {
     method: 'POST',
