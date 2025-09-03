@@ -1,27 +1,45 @@
 {
   "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": ["**/.env.*local"],
+  "globalEnv": ["NODE_ENV"],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": ["dist/**"]
     },
     "dev": {
       "cache": false,
       "persistent": true
     },
-    "docker:build": {
-      "cache": false,
-      "dependsOn": ["^docker:build"]
+    "start": {
+      "dependsOn": ["build"],
+      "persistent": true
     },
     "docker:push": {
+      "cache": false
+    },
+    "test": {
+      "dependsOn": ["^build"]
+    },
+    "test:coverage": {
+      "dependsOn": ["^build"],
+      "outputs": ["coverage/**"]
+    },
+    "test:watch": {
       "cache": false,
-      "dependsOn": ["lint", "test", "docker:build"]
+      "persistent": true
     },
-    "lint": {},
-    "start": {
-      "dependsOn": ["build"]
+    "lint": {
+      "cache": false
     },
-    "test": {}
+    "lint:check": {
+      "cache": false
+    },
+    "typecheck": {
+      "cache": false
+    },
+    "clean": {
+      "cache": false
+    }
   }
 }

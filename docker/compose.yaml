@@ -1,9 +1,9 @@
 version: '3.8'
 
 services:
-  fullstack-nest-backend:
-    image: lgdweb/fullstack-nest-backend:prod
-    container_name: fullstack-nest-backend
+  fullstack-nest-api:
+    image: ghcr.io/tituxmetal/fullstack-nest-api:prod
+    container_name: fullstack-nest-api
     environment:
       DATABASE_URL: ${DATABASE_URL}
       JWT_SECRET: ${JWT_SECRET}
@@ -19,9 +19,9 @@ services:
       - default-nw
     restart: unless-stopped
 
-  fullstack-astro-frontend:
-    image: lgdweb/fullstack-astro-frontend:prod
-    container_name: fullstack-astro-frontend
+  fullstack-astro-web:
+    image: ghcr.io/tituxmetal/fullstack-astro-web:prod
+    container_name: fullstack-astro-web
     environment:
       API_URL: ${API_URL}
       PUBLIC_API_URL: ${PUBLIC_API_URL}
@@ -32,7 +32,7 @@ services:
       - default-nw
     restart: unless-stopped
     depends_on:
-      - fullstack-nest-backend
+      - fullstack-nest-api
 
 volumes:
   data:

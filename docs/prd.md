@@ -169,7 +169,6 @@ methodology that will guide the technical implementation.
 #### Remaining Story
 
 - **Story 0.4: Finalize Project Cleanup and Documentation**
-
   - **User Story**: As a developer joining the project, I need the legacy `memory-bank`
     documentation removed and the `README.md` files updated so that I can quickly understand the
     current project structure and methodology.

@@ -22,7 +22,6 @@
   removed and the `README.md` files updated so that I can quickly understand the current project
   structure and methodology.
 - **Acceptance Criteria**:
-
   1. The `memory-bank/` directory at the project root MUST be deleted.
   2. The main `README.md` at the project root MUST be updated to accurately reflect the new project
      structure and development methodology.

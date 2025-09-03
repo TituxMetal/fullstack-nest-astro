@@ -110,8 +110,8 @@ infrastructure concerns while maintaining all functionality**.
 
 3. **AC2.3.3**: Create users infrastructure layer: `users/infrastructure/repositories/`
    (PrismaUser.repository.ts implementing IUserRepository), `users/infrastructure/controllers/`
-   (User.controller.ts), `users/infrastructure/mappers/` (User.mapper.ts), with index.ts barrel files
-   in each folder
+   (User.controller.ts), `users/infrastructure/mappers/` (User.mapper.ts), with index.ts barrel
+   files in each folder
 
 4. **AC2.3.4**: Create Users.module.ts at root of users folder, configure dependency injection with
    proper providers for repositories and use cases using NestJS patterns
@@ -122,7 +122,7 @@ infrastructure concerns while maintaining all functionality**.
 **Integration Verification:**
 
 - **IV2.3.1**: GET `/users/me` endpoint works identically
-- **IV2.3.2**: PATCH `/users/me` endpoint works identically  
+- **IV2.3.2**: PATCH `/users/me` endpoint works identically
 - **IV2.3.3**: DELETE `/users/me` endpoint works identically
 - **IV2.3.4**: POST `/users` endpoint works identically
 - **IV2.3.5**: GET `/users` endpoint works identically
@@ -209,10 +209,13 @@ and architectural debt analysis documented in ADR-001. The original epic stories
 the actual stories created to address critical architectural issues discovered during Story 2.2 QA
 review:
 
-- **Story 2.3**: Updated to reflect Users module Clean Architecture refactoring per QA recommendations (corrected to plural naming per DDD/Clean Architecture best practices)
+- **Story 2.3**: Updated to reflect Users module Clean Architecture refactoring per QA
+  recommendations (corrected to plural naming per DDD/Clean Architecture best practices)
 - **Story 2.4**: Replaced with Token module dissolution into Auth infrastructure (critical
   architectural debt)
 - **Story 2.5**: Replaced with Infrastructure Foundation and Repository Pattern implementation
   (foundational requirement)
 
-See [ADR-001: Backend Clean Architecture Refactoring Strategy](../architecture/adr/001-backend-clean-architecture-refactoring.md) for detailed analysis and rationale.
+See
+[ADR-001: Backend Clean Architecture Refactoring Strategy](../architecture/adr/001-backend-clean-architecture-refactoring.md)
+for detailed analysis and rationale.

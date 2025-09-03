@@ -2,12 +2,14 @@ schema: 1
 story: '2.2'
 story_title: 'Refactor Auth Bounded Context to Clean Architecture'
 gate: PASS
-status_reason: 'All acceptance criteria met with excellent Clean Architecture implementation and comprehensive test coverage'
+status_reason:
+  'All acceptance criteria met with excellent Clean Architecture implementation and comprehensive
+  test coverage'
 reviewer: 'Quinn (Test Architect)'
 updated: '2025-09-02T10:54:00Z'
 
 top_issues: []
-waiver: 
+waiver:
   active: false
 
 quality_score: 100
@@ -70,7 +72,7 @@ architectural_debt:
     - module: 'Shared'
       violation: 'Dumping ground anti-pattern'
       impact: 'MEDIUM'
-  total_debt_score: 85  # Out of 100 (higher = more debt)
+  total_debt_score: 85 # Out of 100 (higher = more debt)
   refactoring_priority: 'URGENT'
 
 technical_debt:
@@ -78,7 +80,7 @@ technical_debt:
   score: 0
 
 test_architecture:
-  unit_tests: 
+  unit_tests:
     count: 105
     coverage: 85
   integration_tests:
