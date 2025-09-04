@@ -40,7 +40,7 @@ cd fullstack-nest-astro
 yarn install
 
 # Setup database for backend
-yarn workspace backend prisma migrate deploy
+yarn workspace @app/api prisma migrate deploy
 ```
 
 ### Development
@@ -50,10 +50,10 @@ yarn workspace backend prisma migrate deploy
 yarn turbo run dev
 
 # Start only the backend
-yarn workspace backend dev
+yarn workspace @app/api dev
 
 # Start only the frontend
-yarn workspace frontend dev
+yarn workspace @app/web dev
 ```
 
 ---
@@ -62,7 +62,7 @@ yarn workspace frontend dev
 
 ### Backend
 
-Create a `.env` file in the `apps/backend` directory with:
+Create a `.env` file in the `apps/api` directory with:
 
 ```bash
 # Server Configuration
@@ -83,7 +83,7 @@ SESSION_TTL=86400000
 
 ### Frontend
 
-Create a `.env` file in the `apps/frontend` directory with:
+Create a `.env` file in the `apps/web` directory with:
 
 ```bash
 # For server-side API calls (not exposed to browser)
@@ -103,8 +103,8 @@ and shared code.
 ```tree
 .
 ├── apps/                  # Deployable applications
-│   ├── backend/           # NestJS API
-│   └── frontend/          # Astro + React UI
+│   ├── api/           # NestJS API
+│   └── web/          # Astro + React UI
 ├── packages/              # Shared packages (e.g., configs)
 ├── docs/                  # Project documentation (PRD, Architecture)
 │   ├── prd/
@@ -124,10 +124,10 @@ Build Docker images:
 
 ```bash
 # Build backend
-yarn workspace backend docker:build
+yarn workspace @app/api docker:build
 
 # Build frontend
-yarn workspace frontend docker:build
+yarn workspace @app/web docker:build
 ```
 
 ---
@@ -139,10 +139,10 @@ yarn workspace frontend docker:build
 yarn turbo run test
 
 # Run backend tests
-yarn workspace backend test
+yarn workspace @app/api test
 
 # Run frontend tests
-yarn workspace frontend test
+yarn workspace @app/web test
 ```
 
 ---
@@ -159,8 +159,8 @@ directory.
 
 Each app also has its own README with specific details:
 
-- [Backend README](./apps/backend/README.md)
-- [Frontend README](./apps/frontend/README.md)
+- [Backend README](./apps/api/README.md)
+- [Frontend README](./apps/web/README.md)
 
 ---
 

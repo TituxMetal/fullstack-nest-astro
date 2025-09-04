@@ -14,7 +14,7 @@ The original Epic 1 design contained **4 separate stories (1.1, 1.2, 1.3, 1.4)**
 
 - **Story 1.1**: Create empty `apps/` and `packages/` directories → **NOT COMMITABLE** (incomplete
   work)
-- **Story 1.2**: Move `backend/` and `frontend/` to `apps/` → **NOT COMMITABLE** (broken state until
+- **Story 1.2**: Move `backend/` and `web/` to `apps/` → **NOT COMMITABLE** (broken state until
   configs updated)
 - **Story 1.3**: Update root configuration files → **NOT COMMITABLE** (Docker still broken)
 - **Story 1.4**: Update Docker configurations → **FINALLY COMMITABLE** (complete, working state)

@@ -114,7 +114,7 @@
 - **File Structure Approach (Frontend)**: Adopt a component-type-based structure.
 
   ```tree
-  frontend/src/
+  web/src/
   ├── components/
   │   ├── forms/
   │   ├── icons/
@@ -176,7 +176,7 @@ methodology that will guide the technical implementation.
     1. The `memory-bank/` directory at the project root MUST be deleted.
     2. The main `README.md` at the project root MUST be updated to accurately reflect the new
        project structure and development methodology.
-    3. All other `README.md` files (e.g., in `backend/`, `frontend/`) MUST be reviewed and updated
+    3. All other `README.md` files (e.g., in `api/`, `web/`) MUST be reviewed and updated
        to be consistent with the new project standards.
 
 - **Integration Verification**: BMAD documentation structure is in place, memory bank files removed,
@@ -203,15 +203,15 @@ fully functional, modern monorepo structure that is commitable and testable as a
 
 1. **AC1.1.1**: Root directory contains `apps/` directory
 2. **AC1.1.2**: Root directory contains `packages/` directory
-3. **AC1.1.3**: `backend/` directory is moved to `apps/backend/` with all files intact
-4. **AC1.1.4**: `frontend/` directory is moved to `apps/frontend/` with all files intact
+3. **AC1.1.3**: `backend/` directory is moved to `apps/api/` with all files intact
+4. **AC1.1.4**: `web/` directory is moved to `apps/web/` with all files intact
 5. **AC1.1.5**: Git history is preserved for moved files (using `git mv` commands)
 
 **Configuration Updates:** 6. **AC1.1.6**: `turbo.json` pipeline configurations updated to use
-`apps/backend` and `apps/frontend` paths 7. **AC1.1.7**: Root `package.json` workspace
+`apps/api` and `apps/web` paths 7. **AC1.1.7**: Root `package.json` workspace
 configurations updated to include `apps/*` pattern 8. **AC1.1.8**: `docker/Dockerfile.backend`
-updated to use `apps/backend` as build context 9. **AC1.1.9**: `docker/Dockerfile.frontend` updated
-to use `apps/frontend` as build context 10. **AC1.1.10**: `docker/compose.yaml` updated to reference
+updated to use `apps/api` as build context 9. **AC1.1.9**: `docker/Dockerfile.frontend` updated
+to use `apps/web` as build context 10. **AC1.1.10**: `docker/compose.yaml` updated to reference
 new application paths 11. **AC1.1.11**: `docker/start.sh` script updated for new directory structure
 
 **System Functionality:** 12. **AC1.1.12**: All Turborepo commands (`yarn build`, `yarn test`,
@@ -250,7 +250,7 @@ breaking existing functionality**.
 
 **Acceptance Criteria:**
 
-1. **AC2.1.1**: Create Clean Architecture structure directly in `apps/backend/src/` with feature
+1. **AC2.1.1**: Create Clean Architecture structure directly in `apps/api/src/` with feature
    modules:
 
    ```tree
@@ -430,7 +430,7 @@ their functional role**.
 1. **AC3.1.1**: Create new component type directories:
 
    ```tree
-   apps/frontend/src/components/
+   apps/web/src/components/
    ├── forms/          # Form components
    ├── icons/          # Icon components
    ├── layouts/        # Layout components
@@ -440,7 +440,7 @@ their functional role**.
 2. **AC3.1.2**: Create new `lib/` directory structure:
 
    ```tree
-   apps/frontend/src/lib/
+   apps/web/src/lib/
    ├── schemas/        # Zod schemas
    ├── types/          # TypeScript types
    └── utils/          # Utility functions
@@ -561,7 +561,7 @@ development**.
 **Acceptance Criteria:**
 
 1. **AC3.6.1**: Remove all original directories that have been migrated
-2. **AC3.6.2**: Update `apps/frontend/README.md` with new architecture documentation
+2. **AC3.6.2**: Update `apps/web/README.md` with new architecture documentation
 3. **AC3.6.3**: Create architecture diagrams showing component organization
 4. **AC3.6.4**: Verify no dead imports or circular dependencies exist
 5. **AC3.6.5**: Update any build configurations if needed for new structure
@@ -656,10 +656,10 @@ backend-specific needs**.
 
 **Acceptance Criteria:**
 
-1. **AC4.3.1**: Update `apps/backend/package.json` to include dependencies:
+1. **AC4.3.1**: Update `apps/api/package.json` to include dependencies:
    - `@repo/typescript-config: "workspace:*"`
    - `@repo/eslint-config: "workspace:*"`
-2. **AC4.3.2**: Replace `apps/backend/tsconfig.json` to extend from shared config:
+2. **AC4.3.2**: Replace `apps/api/tsconfig.json` to extend from shared config:
 
    ```json
    {
@@ -672,7 +672,7 @@ backend-specific needs**.
    }
    ```
 
-3. **AC4.3.3**: Replace `apps/backend/eslint.config.cjs` to extend from shared config
+3. **AC4.3.3**: Replace `apps/api/eslint.config.cjs` to extend from shared config
 4. **AC4.3.4**: Preserve any backend-specific TypeScript and ESLint overrides
 5. **AC4.3.5**: Remove redundant configuration from backend files
 
@@ -692,10 +692,10 @@ needs**.
 
 **Acceptance Criteria:**
 
-1. **AC4.4.1**: Update `apps/frontend/package.json` to include dependencies:
+1. **AC4.4.1**: Update `apps/web/package.json` to include dependencies:
    - `@repo/typescript-config: "workspace:*"`
    - `@repo/eslint-config: "workspace:*"`
-2. **AC4.4.2**: Replace `apps/frontend/tsconfig.json` to extend from shared config:
+2. **AC4.4.2**: Replace `apps/web/tsconfig.json` to extend from shared config:
 
    ```json
    {
@@ -708,7 +708,7 @@ needs**.
    }
    ```
 
-3. **AC4.4.3**: Replace `apps/frontend/eslint.config.cjs` to extend from shared config
+3. **AC4.4.3**: Replace `apps/web/eslint.config.cjs` to extend from shared config
 4. **AC4.4.4**: Preserve Astro and React specific configurations
 5. **AC4.4.5**: Remove redundant configuration from frontend files
 

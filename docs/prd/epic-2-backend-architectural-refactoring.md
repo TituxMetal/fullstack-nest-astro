@@ -13,7 +13,7 @@ breaking existing functionality**.
 
 **Acceptance Criteria:**
 
-1. **AC2.1.1**: Create Clean Architecture structure directly in `apps/backend/src/` with feature
+1. **AC2.1.1**: Create Clean Architecture structure directly in `apps/api/src/` with feature
    modules:
 
    ```tree

@@ -47,7 +47,7 @@ principles, using the successfully refactored Auth module as a template.
 ### Target Architecture
 
 ```treeview
-apps/backend/src/
+apps/api/src/
 ├── [bounded-contexts]/          # Auth, User, Tasks, etc.
 │   ├── {Context}.module.ts     # NestJS module configuration
 │   ├── domain/                 # Business logic layer

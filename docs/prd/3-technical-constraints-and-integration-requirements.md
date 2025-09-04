@@ -18,7 +18,7 @@
   Architecture layers applied within each context.
 
   ```tree
-  backend/src/
+  api/src/
   ├── auth/
   │   ├── domain/
   │   ├── application/
@@ -35,7 +35,7 @@
 - **File Structure Approach (Frontend)**: Adopt a component-type-based structure.
 
   ```tree
-  frontend/src/
+  web/src/
   ├── components/
   │   ├── forms/
   │   ├── icons/

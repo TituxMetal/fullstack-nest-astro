@@ -78,10 +78,10 @@ backend-specific needs**.
 
 **Acceptance Criteria:**
 
-1. **AC4.3.1**: Update `apps/backend/package.json` to include dependencies:
+1. **AC4.3.1**: Update `apps/api/package.json` to include dependencies:
    - `@repo/typescript-config: "workspace:*"`
    - `@repo/eslint-config: "workspace:*"`
-2. **AC4.3.2**: Replace `apps/backend/tsconfig.json` to extend from shared config:
+2. **AC4.3.2**: Replace `apps/api/tsconfig.json` to extend from shared config:
 
    ```json
    {
@@ -94,7 +94,7 @@ backend-specific needs**.
    }
    ```
 
-3. **AC4.3.3**: Replace `apps/backend/eslint.config.cjs` to extend from shared config
+3. **AC4.3.3**: Replace `apps/api/eslint.config.cjs` to extend from shared config
 4. **AC4.3.4**: Preserve any backend-specific TypeScript and ESLint overrides
 5. **AC4.3.5**: Remove redundant configuration from backend files
 
@@ -114,10 +114,10 @@ needs**.
 
 **Acceptance Criteria:**
 
-1. **AC4.4.1**: Update `apps/frontend/package.json` to include dependencies:
+1. **AC4.4.1**: Update `apps/web/package.json` to include dependencies:
    - `@repo/typescript-config: "workspace:*"`
    - `@repo/eslint-config: "workspace:*"`
-2. **AC4.4.2**: Replace `apps/frontend/tsconfig.json` to extend from shared config:
+2. **AC4.4.2**: Replace `apps/web/tsconfig.json` to extend from shared config:
 
    ```json
    {
@@ -130,7 +130,7 @@ needs**.
    }
    ```
 
-3. **AC4.4.3**: Replace `apps/frontend/eslint.config.cjs` to extend from shared config
+3. **AC4.4.3**: Replace `apps/web/eslint.config.cjs` to extend from shared config
 4. **AC4.4.4**: Preserve Astro and React specific configurations
 5. **AC4.4.5**: Remove redundant configuration from frontend files
 

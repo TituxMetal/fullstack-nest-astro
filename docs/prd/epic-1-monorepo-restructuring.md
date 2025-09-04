@@ -17,15 +17,15 @@ fully functional, modern monorepo structure that is commitable and testable as a
 
 1. **AC1.1.1**: Root directory contains `apps/` directory
 2. **AC1.1.2**: Root directory contains `packages/` directory
-3. **AC1.1.3**: `backend/` directory is moved to `apps/backend/` with all files intact
-4. **AC1.1.4**: `frontend/` directory is moved to `apps/frontend/` with all files intact
+3. **AC1.1.3**: `backend/` directory is moved to `apps/api/` with all files intact
+4. **AC1.1.4**: `web/` directory is moved to `apps/web/` with all files intact
 5. **AC1.1.5**: Git history is preserved for moved files (using `git mv` commands)
 
 **Configuration Updates:** 6. **AC1.1.6**: `turbo.json` pipeline configurations updated to use
-`apps/backend` and `apps/frontend` paths 7. **AC1.1.7**: Root `package.json` workspace
+`apps/api` and `apps/web` paths 7. **AC1.1.7**: Root `package.json` workspace
 configurations updated to include `apps/*` pattern 8. **AC1.1.8**: `docker/Dockerfile.backend`
-updated to use `apps/backend` as build context 9. **AC1.1.9**: `docker/Dockerfile.frontend` updated
-to use `apps/frontend` as build context 10. **AC1.1.10**: `docker/compose.yaml` updated to reference
+updated to use `apps/api` as build context 9. **AC1.1.9**: `docker/Dockerfile.frontend` updated
+to use `apps/web` as build context 10. **AC1.1.10**: `docker/compose.yaml` updated to reference
 new application paths 11. **AC1.1.11**: `docker/start.sh` script updated for new directory structure
 
 **System Functionality:** 12. **AC1.1.12**: All Turborepo commands (`yarn build`, `yarn test`,

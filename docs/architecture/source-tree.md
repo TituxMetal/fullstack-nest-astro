@@ -5,7 +5,7 @@
 ```plaintext
 project-root/
 ├── apps/                                    # Epic 1: Deployable applications
-│   ├── backend/                            # NestJS API application
+│   ├── api/                            # NestJS API application
 │   │   ├── src/
 │   │   │   ├── auth/                       # Epic 2: Auth Module (Clean Architecture)
 │   │   │   │   ├── Auth.module.ts
@@ -155,7 +155,7 @@ project-root/
 │   │   ├── tsconfig.json                   # Extends @repo/typescript-config
 │   │   └── eslint.config.cjs               # Extends @repo/eslint-config
 │   │
-│   └── frontend/                           # Astro + React application
+│   └── web/                           # Astro + React application
 │       ├── src/
 │       │   ├── components/                 # Epic 3: Component-type organization
 │       │   │   ├── forms/                  # Form components
@@ -226,8 +226,8 @@ project-root/
 │       └── README.md
 │
 ├── docker/                                 # Epic 1: Updated paths
-│   ├── Dockerfile.backend                  # References apps/backend
-│   ├── Dockerfile.frontend                 # References apps/frontend
+│   ├── Dockerfile.api                      # References apps/api
+│   ├── Dockerfile.web                      # References apps/web
 │   ├── compose.yaml                        # Production deployment (Portainer)
 │   └── start.sh                            # Build scripts
 │

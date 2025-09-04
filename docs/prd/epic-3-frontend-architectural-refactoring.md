@@ -16,7 +16,7 @@ their functional role**.
 1. **AC3.1.1**: Create new component type directories:
 
    ```tree
-   apps/frontend/src/components/
+   apps/web/src/components/
    ├── forms/          # Form components
    ├── icons/          # Icon components
    ├── layouts/        # Layout components
@@ -26,7 +26,7 @@ their functional role**.
 2. **AC3.1.2**: Create new `lib/` directory structure:
 
    ```tree
-   apps/frontend/src/lib/
+   apps/web/src/lib/
    ├── schemas/        # Zod schemas
    ├── types/          # TypeScript types
    └── utils/          # Utility functions
@@ -147,7 +147,7 @@ development**.
 **Acceptance Criteria:**
 
 1. **AC3.6.1**: Remove all original directories that have been migrated
-2. **AC3.6.2**: Update `apps/frontend/README.md` with new architecture documentation
+2. **AC3.6.2**: Update `apps/web/README.md` with new architecture documentation
 3. **AC3.6.3**: Create architecture diagrams showing component organization
 4. **AC3.6.4**: Verify no dead imports or circular dependencies exist
 5. **AC3.6.5**: Update any build configurations if needed for new structure

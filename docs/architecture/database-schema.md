@@ -4,7 +4,7 @@
 
 ```sql
 -- SQLite Schema (Current Implementation)
--- File: backend/prisma/schema.prisma
+-- File: api/prisma/schema.prisma
 
 generator client {
   provider = "prisma-client-js"

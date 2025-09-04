@@ -7,7 +7,7 @@ maintained:
 
 ```sql
 -- SQLite Schema (Current Implementation)
--- File: backend/prisma/schema.prisma
+-- File: api/prisma/schema.prisma
 
 model User {
   id String @id @default(uuid())

@@ -25,7 +25,7 @@
   1. The `memory-bank/` directory at the project root MUST be deleted.
   2. The main `README.md` at the project root MUST be updated to accurately reflect the new project
      structure and development methodology.
-  3. All other `README.md` files (e.g., in `backend/`, `frontend/`) MUST be reviewed and updated to
+  3. All other `README.md` files (e.g., in `api/`, `web/`) MUST be reviewed and updated to
      be consistent with the new project standards.
 
 - **Integration Verification**: BMAD documentation structure is in place, memory bank files removed,
