@@ -3,7 +3,7 @@ import { ConfigModule } from '@nestjs/config'
 
 import { AuthModule } from '~/auth/Auth.module'
 import { PrismaModule } from '~/prisma'
-import { UserModule } from '~/user'
+import { UsersModule } from '~/users/Users.module'
 
 import { TokenModule } from './token/token.module'
 
@@ -13,7 +13,7 @@ import { TokenModule } from './token/token.module'
       isGlobal: true
     }),
     PrismaModule,
-    UserModule,
+    UsersModule,
     AuthModule,
     TokenModule
   ]

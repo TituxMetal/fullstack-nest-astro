@@ -38,7 +38,7 @@ export class PrismaAuthUserRepository implements IAuthUserRepository {
 
   async findByUsername(username: string): Promise<AuthUserEntity | null> {
     const user = await this.prisma.user.findUnique({
-      where: { username }
+      where: { username: username }
     })
 
     return user ? this.mapToDomain(user) : null
