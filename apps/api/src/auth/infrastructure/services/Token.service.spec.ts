@@ -3,11 +3,11 @@ import { JwtService } from '@nestjs/jwt'
 import { Test } from '@nestjs/testing'
 import type { TestingModule } from '@nestjs/testing'
 
+import type { IJwtPayload } from '~/auth/domain/interfaces'
 import { ConfigService } from '~/config'
 import { PrismaService } from '~/prisma'
 
-import type { JwtPayload } from './interfaces'
-import { TokenService } from './token.service'
+import { TokenService } from './Token.service'
 
 describe('TokenService', () => {
   let service: TokenService
@@ -16,7 +16,6 @@ describe('TokenService', () => {
   let prismaService: { user: { findUnique: jest.Mock } }
 
   beforeEach(async () => {
-    // Setup mocks
     jwtService = {
       signAsync: jest.fn().mockResolvedValue('test-token'),
       verifyAsync: jest.fn()
@@ -54,7 +53,7 @@ describe('TokenService', () => {
 
   describe('generateToken', () => {
     it('should generate a JWT token', async () => {
-      const payload: JwtPayload = {
+      const payload: IJwtPayload = {
         sub: 'user-id',
         identifier: 'username'
       }
@@ -68,10 +67,21 @@ describe('TokenService', () => {
 
       expect(token).toBe('test-token')
     })
+
+    it('should validate payload before generating token', async () => {
+      const invalidPayload: IJwtPayload = {
+        sub: '',
+        identifier: 'username'
+      }
+
+      await expect(service.generateToken(invalidPayload)).rejects.toThrow(
+        'JWT payload sub (subject) must be a non-empty string'
+      )
+    })
   })
 
   describe('verifyToken', () => {
-    const validPayload: JwtPayload = {
+    const validPayload: IJwtPayload = {
       sub: 'user-id',
       identifier: 'username'
     }

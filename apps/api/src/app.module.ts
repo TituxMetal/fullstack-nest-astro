@@ -5,8 +5,6 @@ import { AuthModule } from '~/auth/Auth.module'
 import { PrismaModule } from '~/prisma'
 import { UsersModule } from '~/users/Users.module'
 
-import { TokenModule } from './token/token.module'
-
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -14,8 +12,7 @@ import { TokenModule } from './token/token.module'
     }),
     PrismaModule,
     UsersModule,
-    AuthModule,
-    TokenModule
+    AuthModule
   ]
 })
 export class AppModule {}
