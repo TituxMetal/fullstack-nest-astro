@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common'
 
 import { AuthModule } from '~/auth/Auth.module'
-import { PrismaService } from '~/prisma'
+import { PrismaProvider } from '~/shared/infrastructure/database'
 
 import { UserService } from './application/services'
 import {
@@ -22,8 +22,8 @@ import { PrismaUserRepository } from './infrastructure/repositories'
     // Repository binding
     {
       provide: 'IUserRepository',
-      useFactory: (prisma: PrismaService) => new PrismaUserRepository(prisma),
-      inject: [PrismaService]
+      useFactory: (prisma: PrismaProvider) => new PrismaUserRepository(prisma),
+      inject: [PrismaProvider]
     },
     // Use cases
     {

@@ -4,7 +4,7 @@ import type { User } from '@prisma/client'
 import { AuthUserEntity } from '~/auth/domain/entities'
 import type { IAuthUserRepository } from '~/auth/domain/repositories'
 import { EmailValueObject, PasswordValueObject } from '~/auth/domain/value-objects'
-import { PrismaService } from '~/prisma'
+import { PrismaProvider } from '~/shared/infrastructure/database'
 
 interface UserCreateData {
   id: string
@@ -18,7 +18,7 @@ interface UserCreateData {
 
 @Injectable()
 export class PrismaAuthUserRepository implements IAuthUserRepository {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaProvider) {}
 
   async findById(id: string): Promise<AuthUserEntity | null> {
     const user = await this.prisma.user.findUnique({
@@ -38,7 +38,7 @@ export class PrismaAuthUserRepository implements IAuthUserRepository {
 
   async findByUsername(username: string): Promise<AuthUserEntity | null> {
     const user = await this.prisma.user.findUnique({
-      where: { username: username }
+      where: { username }
     })
 
     return user ? this.mapToDomain(user) : null

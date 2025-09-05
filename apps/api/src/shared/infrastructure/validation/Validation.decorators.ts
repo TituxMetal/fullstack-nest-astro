@@ -1,7 +1,7 @@
 import { applyDecorators } from '@nestjs/common'
 import { IsString, Matches, MaxLength, MinLength } from 'class-validator'
 
-import { VALIDATION } from './constants'
+import { VALIDATION } from '~/shared/domain/validation'
 
 export const IsPassword = () =>
   applyDecorators(

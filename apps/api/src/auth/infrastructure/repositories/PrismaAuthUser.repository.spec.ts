@@ -4,15 +4,15 @@ import type { User } from '@prisma/client'
 
 import { AuthUserEntity } from '~/auth/domain/entities'
 import { EmailValueObject, PasswordValueObject } from '~/auth/domain/value-objects'
-import { PrismaService } from '~/prisma'
+import { PrismaProvider } from '~/shared/infrastructure/database'
 
 import { PrismaAuthUserRepository } from './PrismaAuthUser.repository'
 
 describe('PrismaAuthUserRepository', () => {
   let repository: PrismaAuthUserRepository
-  let prismaService: PrismaService
+  let prismaService: PrismaProvider
 
-  const mockPrismaService = {
+  const mockPrismaProvider = {
     user: {
       findUnique: jest.fn(),
       create: jest.fn(),
@@ -39,14 +39,14 @@ describe('PrismaAuthUserRepository', () => {
       providers: [
         PrismaAuthUserRepository,
         {
-          provide: PrismaService,
-          useValue: mockPrismaService
+          provide: PrismaProvider,
+          useValue: mockPrismaProvider
         }
       ]
     }).compile()
 
     repository = module.get<PrismaAuthUserRepository>(PrismaAuthUserRepository)
-    prismaService = module.get<PrismaService>(PrismaService)
+    prismaService = module.get<PrismaProvider>(PrismaProvider)
     jest.clearAllMocks()
   })
 
@@ -56,7 +56,7 @@ describe('PrismaAuthUserRepository', () => {
 
   describe('findById', () => {
     it('should find user by id', async () => {
-      mockPrismaService.user.findUnique.mockResolvedValue(mockUser)
+      mockPrismaProvider.user.findUnique.mockResolvedValue(mockUser)
 
       const result = await repository.findById('user-id')
 
@@ -71,7 +71,7 @@ describe('PrismaAuthUserRepository', () => {
     })
 
     it('should return null when user not found', async () => {
-      mockPrismaService.user.findUnique.mockResolvedValue(null)
+      mockPrismaProvider.user.findUnique.mockResolvedValue(null)
 
       const result = await repository.findById('non-existent-id')
 
@@ -82,7 +82,7 @@ describe('PrismaAuthUserRepository', () => {
   describe('findByEmail', () => {
     it('should find user by email', async () => {
       const email = new EmailValueObject('test@example.com')
-      mockPrismaService.user.findUnique.mockResolvedValue(mockUser)
+      mockPrismaProvider.user.findUnique.mockResolvedValue(mockUser)
 
       const result = await repository.findByEmail(email)
 
@@ -97,7 +97,7 @@ describe('PrismaAuthUserRepository', () => {
 
     it('should return null when user not found', async () => {
       const email = new EmailValueObject('nonexistent@example.com')
-      mockPrismaService.user.findUnique.mockResolvedValue(null)
+      mockPrismaProvider.user.findUnique.mockResolvedValue(null)
 
       const result = await repository.findByEmail(email)
 
@@ -107,7 +107,7 @@ describe('PrismaAuthUserRepository', () => {
 
   describe('findByUsername', () => {
     it('should find user by username', async () => {
-      mockPrismaService.user.findUnique.mockResolvedValue(mockUser)
+      mockPrismaProvider.user.findUnique.mockResolvedValue(mockUser)
 
       const result = await repository.findByUsername('testuser')
 
@@ -121,7 +121,7 @@ describe('PrismaAuthUserRepository', () => {
     })
 
     it('should return null when user not found', async () => {
-      mockPrismaService.user.findUnique.mockResolvedValue(null)
+      mockPrismaProvider.user.findUnique.mockResolvedValue(null)
 
       const result = await repository.findByUsername('nonexistent')
 
@@ -141,7 +141,7 @@ describe('PrismaAuthUserRepository', () => {
         new Date('2023-01-01')
       )
 
-      mockPrismaService.user.create.mockResolvedValue(mockUser)
+      mockPrismaProvider.user.create.mockResolvedValue(mockUser)
 
       const result = await repository.save(authUser)
 
@@ -176,7 +176,7 @@ describe('PrismaAuthUserRepository', () => {
         new Date('2023-01-01')
       )
 
-      mockPrismaService.user.update.mockResolvedValue(mockUser)
+      mockPrismaProvider.user.update.mockResolvedValue(mockUser)
 
       const result = await repository.update(authUser)
 
@@ -202,7 +202,7 @@ describe('PrismaAuthUserRepository', () => {
 
   describe('delete', () => {
     it('should delete a user', async () => {
-      mockPrismaService.user.delete.mockResolvedValue(mockUser)
+      mockPrismaProvider.user.delete.mockResolvedValue(mockUser)
 
       await repository.delete('user-id')
 

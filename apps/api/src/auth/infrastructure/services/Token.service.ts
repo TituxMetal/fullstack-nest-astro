@@ -4,7 +4,7 @@ import { JwtService } from '@nestjs/jwt'
 import { IJwtPayload } from '~/auth/domain/interfaces'
 import { JwtPayloadValueObject } from '~/auth/domain/value-objects'
 import { ConfigService } from '~/config/config.service'
-import { PrismaService } from '~/prisma'
+import { PrismaProvider } from '~/shared/infrastructure/database'
 
 @Injectable()
 export class TokenService {
@@ -14,7 +14,7 @@ export class TokenService {
   constructor(
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
-    private readonly prisma: PrismaService
+    private readonly prisma: PrismaProvider
   ) {
     this.jwtSecret = this.configService.jwt.secret
     this.jwtExpiration = this.configService.jwt.expiresIn

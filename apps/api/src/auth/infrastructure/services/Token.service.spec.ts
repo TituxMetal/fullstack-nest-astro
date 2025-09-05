@@ -5,7 +5,7 @@ import type { TestingModule } from '@nestjs/testing'
 
 import type { IJwtPayload } from '~/auth/domain/interfaces'
 import { ConfigService } from '~/config'
-import { PrismaService } from '~/prisma'
+import { PrismaProvider } from '~/shared/infrastructure/database'
 
 import { TokenService } from './Token.service'
 
@@ -39,7 +39,7 @@ describe('TokenService', () => {
         TokenService,
         { provide: JwtService, useValue: jwtService },
         { provide: ConfigService, useValue: configService },
-        { provide: PrismaService, useValue: prismaService }
+        { provide: PrismaProvider, useValue: prismaService }
       ]
     }).compile()
 

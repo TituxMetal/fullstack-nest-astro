@@ -1,7 +1,7 @@
 import { Test } from '@nestjs/testing'
 
 import { JwtAuthGuard } from '~/auth/infrastructure/guards'
-import type { AuthenticatedUser } from '~/shared/types'
+import type { AuthenticatedUser } from '~/shared/domain/types'
 import { GetUserProfileDto, UpdateUserProfileDto, CreateUserDto } from '~/users/application/dtos'
 import { UserService } from '~/users/application/services'
 

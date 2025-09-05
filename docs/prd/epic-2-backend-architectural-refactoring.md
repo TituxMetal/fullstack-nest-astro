@@ -162,12 +162,12 @@ and maintain proper bounded context boundaries**.
 - **IV2.4.4**: User controller authentication continues to work
 - **IV2.4.5**: All existing tests pass with updated imports
 
-## **Story 2.5: Infrastructure Foundation - Repository Patterns and Database Abstraction**
+## **Story 2.5: Infrastructure Foundation - Shared Clean Architecture Components**
 
-As a **developer working with any data access layer**, I want **a standardized repository
-abstraction layer with base interfaces and common patterns**, so that **all modules can use
-consistent data access patterns while maintaining Clean Architecture separation and enabling future
-database changes**.
+As a **developer working with shared infrastructure across modules**, I want **common infrastructure
+components moved to shared locations following Clean Architecture patterns**, so that **code
+duplication is eliminated and all modules can access standardized infrastructure components while
+maintaining proper separation of concerns**.
 
 **Acceptance Criteria:**
 
@@ -175,32 +175,30 @@ database changes**.
    PrismaModule), create `shared/infrastructure/database/Database.module.ts` that exports
    PrismaService, and update all existing imports to use shared location
 
-2. **AC2.5.2**: Create `shared/domain/repositories/BaseRepository.interface.ts` with generic
-   `IRepository<TEntity, TId>` interface containing standard CRUD operations: findById, findAll,
-   save, update, delete, exists methods with proper typing
+2. **AC2.5.2**: Move authentication decorators to `shared/infrastructure/decorators/`
+   (GetCurrentUser.decorator.ts) and update all imports from individual modules to shared location
 
-3. **AC2.5.3**: Create `shared/infrastructure/repositories/BaseRepository.abstract.ts` with abstract
-   `BaseRepository<TEntity, TId, TPersistence>` class implementing common CRUD operations using
-   Prisma, with abstract methods for mapping (mapToDomain, mapToPersistence)
+3. **AC2.5.3**: Move common interceptors to `shared/infrastructure/interceptors/`
+   (Serialize.interceptor.ts) and update all imports to use shared infrastructure location
 
-4. **AC2.5.4**: Create `shared/infrastructure/database/UnitOfWork.service.ts` with UnitOfWorkService
-   implementing transaction management, batch operations, and commit/rollback functionality using
-   Prisma transactions
+4. **AC2.5.4**: Move shared domain types to `shared/domain/types/` (auth.types.ts and other common
+   types) and update imports across all modules to use shared domain location
 
-5. **AC2.5.5**: Create `shared/infrastructure/repositories/RepositoryFactory.service.ts` with
-   RepositoryFactoryService for dynamic repository creation and dependency injection management
+5. **AC2.5.5**: Move validation utilities to `shared/infrastructure/validation/` (constants.ts,
+   decorators.ts) and update all imports to use shared validation infrastructure
 
-6. **AC2.5.6**: Update existing PrismaAuthUserRepository to extend BaseRepository and verify all
-   auth functionality continues to work identically, update imports across codebase to use shared
-   infrastructure
+6. **AC2.5.6**: Update all affected modules (auth, users) to use shared infrastructure imports,
+   remove duplicated files, and verify all functionality continues to work identically with shared
+   components
 
 **Integration Verification:**
 
-- **IV2.5.1**: All existing auth endpoints work identically with new repository foundation
-- **IV2.5.2**: Database operations maintain same performance characteristics
-- **IV2.5.3**: All existing tests pass with updated imports and base repository
-- **IV2.5.4**: Transaction management works correctly with unit of work pattern
-- **IV2.5.5**: Repository factory can create and manage repository instances correctly
+- **IV2.5.1**: All existing auth endpoints work identically with shared infrastructure components
+- **IV2.5.2**: User endpoints function normally with shared decorators and interceptors
+- **IV2.5.3**: Database operations maintain same performance characteristics with shared Prisma
+  infrastructure
+- **IV2.5.4**: All existing tests pass with updated imports to shared locations
+- **IV2.5.5**: Shared validation utilities work correctly across all modules
 
 ## Epic Revision History
 
@@ -213,8 +211,8 @@ review:
   recommendations (corrected to plural naming per DDD/Clean Architecture best practices)
 - **Story 2.4**: Replaced with Token module dissolution into Auth infrastructure (critical
   architectural debt)
-- **Story 2.5**: Replaced with Infrastructure Foundation and Repository Pattern implementation
-  (foundational requirement)
+- **Story 2.5**: Updated to reflect actual implementation of Shared Clean Architecture Components
+  (foundational infrastructure consolidation completed)
 
 See
 [ADR-001: Backend Clean Architecture Refactoring Strategy](../architecture/adr/001-backend-clean-architecture-refactoring.md)
