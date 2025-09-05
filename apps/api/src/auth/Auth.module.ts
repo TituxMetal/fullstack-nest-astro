@@ -9,7 +9,7 @@ import { JwtAuthGuard } from '~/auth/infrastructure/guards'
 import { PrismaAuthUserRepository } from '~/auth/infrastructure/repositories'
 import { JwtService, PasswordService, TokenService } from '~/auth/infrastructure/services'
 import { ConfigModule as NestConfigModule, ConfigService as NestConfigService } from '~/config'
-import { PrismaModule } from '~/prisma'
+import { PrismaModule } from '~/shared/infrastructure/database'
 
 @Module({
   imports: [

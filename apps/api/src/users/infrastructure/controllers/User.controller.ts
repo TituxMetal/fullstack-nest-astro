@@ -1,8 +1,8 @@
 import { Controller, Get, Patch, Delete, Post, Body, UseGuards } from '@nestjs/common'
 
-import { GetCurrentUser } from '~/auth/infrastructure/decorators/GetCurrentUser.decorator'
 import { JwtAuthGuard } from '~/auth/infrastructure/guards'
-import type { AuthenticatedUser } from '~/shared/types'
+import type { AuthenticatedUser } from '~/shared/domain/types'
+import { GetCurrentUser } from '~/shared/infrastructure/decorators'
 import type {
   GetUserProfileDto,
   UpdateUserProfileDto,

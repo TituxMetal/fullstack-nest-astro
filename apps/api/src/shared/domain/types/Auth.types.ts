@@ -5,3 +5,10 @@ export interface AuthenticatedUser {
   iat?: number
   exp?: number
 }
+
+export interface JwtPayload {
+  sub: string
+  identifier: string
+  iat?: number
+  exp?: number
+}
