@@ -1,10 +1,10 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 
+import { IJwtPayload } from '~/auth/domain/interfaces'
+import { JwtPayloadValueObject } from '~/auth/domain/value-objects'
 import { ConfigService } from '~/config/config.service'
 import { PrismaService } from '~/prisma'
-
-import { JwtPayload } from './interfaces'
 
 @Injectable()
 export class TokenService {
@@ -20,16 +20,18 @@ export class TokenService {
     this.jwtExpiration = this.configService.jwt.expiresIn
   }
 
-  async generateToken(jwtPayload: JwtPayload) {
-    return this.jwtService.signAsync(jwtPayload, {
+  async generateToken(jwtPayload: IJwtPayload): Promise<string> {
+    const payloadVO = JwtPayloadValueObject.fromPlainObject(jwtPayload)
+
+    return this.jwtService.signAsync(payloadVO.toPlainObject(), {
       secret: this.jwtSecret,
       expiresIn: this.jwtExpiration
     })
   }
 
-  async verifyToken(token: string) {
+  async verifyToken(token: string): Promise<IJwtPayload> {
     try {
-      const payload = await this.jwtService.verifyAsync<JwtPayload>(token, {
+      const payload = await this.jwtService.verifyAsync<IJwtPayload>(token, {
         secret: this.jwtSecret
       })
 

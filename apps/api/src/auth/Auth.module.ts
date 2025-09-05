@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common'
-import { ConfigModule, ConfigService } from '@nestjs/config'
 import { JwtModule } from '@nestjs/jwt'
 
 import { AuthService } from '~/auth/application/services'
@@ -8,19 +7,21 @@ import type { IAuthUserRepository } from '~/auth/domain/repositories'
 import { AuthController } from '~/auth/infrastructure/controllers'
 import { JwtAuthGuard } from '~/auth/infrastructure/guards'
 import { PrismaAuthUserRepository } from '~/auth/infrastructure/repositories'
-import { JwtService, PasswordService } from '~/auth/infrastructure/services'
+import { JwtService, PasswordService, TokenService } from '~/auth/infrastructure/services'
+import { ConfigModule as NestConfigModule, ConfigService as NestConfigService } from '~/config'
 import { PrismaModule } from '~/prisma'
 
 @Module({
   imports: [
     PrismaModule,
+    NestConfigModule,
     JwtModule.registerAsync({
-      imports: [ConfigModule],
-      useFactory: (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET'),
-        signOptions: { expiresIn: '24h' }
-      }),
-      inject: [ConfigService]
+      imports: [NestConfigModule],
+      inject: [NestConfigService],
+      useFactory: (configService: NestConfigService) => ({
+        secret: configService.jwt.secret,
+        signOptions: { expiresIn: configService.jwt.expiresIn }
+      })
     })
   ],
   controllers: [AuthController],
@@ -73,9 +74,10 @@ import { PrismaModule } from '~/prisma'
         new LogoutUseCase(tokenBlacklistService),
       inject: ['TokenBlacklistService']
     },
+    TokenService,
     AuthService,
     JwtAuthGuard
   ],
-  exports: [AuthService, JwtAuthGuard, JwtService]
+  exports: [AuthService, JwtAuthGuard, JwtService, TokenService]
 })
 export class AuthModule {}

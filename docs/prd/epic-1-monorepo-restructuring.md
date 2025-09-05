@@ -22,11 +22,11 @@ fully functional, modern monorepo structure that is commitable and testable as a
 5. **AC1.1.5**: Git history is preserved for moved files (using `git mv` commands)
 
 **Configuration Updates:** 6. **AC1.1.6**: `turbo.json` pipeline configurations updated to use
-`apps/api` and `apps/web` paths 7. **AC1.1.7**: Root `package.json` workspace
-configurations updated to include `apps/*` pattern 8. **AC1.1.8**: `docker/Dockerfile.backend`
-updated to use `apps/api` as build context 9. **AC1.1.9**: `docker/Dockerfile.frontend` updated
-to use `apps/web` as build context 10. **AC1.1.10**: `docker/compose.yaml` updated to reference
-new application paths 11. **AC1.1.11**: `docker/start.sh` script updated for new directory structure
+`apps/api` and `apps/web` paths 7. **AC1.1.7**: Root `package.json` workspace configurations updated
+to include `apps/*` pattern 8. **AC1.1.8**: `docker/Dockerfile.backend` updated to use `apps/api` as
+build context 9. **AC1.1.9**: `docker/Dockerfile.frontend` updated to use `apps/web` as build
+context 10. **AC1.1.10**: `docker/compose.yaml` updated to reference new application paths 11.
+**AC1.1.11**: `docker/start.sh` script updated for new directory structure
 
 **System Functionality:** 12. **AC1.1.12**: All Turborepo commands (`yarn build`, `yarn test`,
 `yarn lint`, `yarn dev`) work from root directory 13. **AC1.1.13**: Yarn workspace commands
