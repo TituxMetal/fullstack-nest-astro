@@ -2,6 +2,8 @@ import { Test } from '@nestjs/testing'
 
 import { JwtAuthGuard } from '~/auth/infrastructure/guards'
 import type { AuthenticatedUser } from '~/shared/domain/types'
+import { LoggerService } from '~/shared/infrastructure/services'
+import { TestDataFactory } from '~/shared/infrastructure/testing'
 import { GetUserProfileDto, UpdateUserProfileDto, CreateUserDto } from '~/users/application/dtos'
 import { UserService } from '~/users/application/services'
 
@@ -11,6 +13,13 @@ describe('UserController', () => {
   let controller: UserController
   let mockUserService: jest.Mocked<UserService>
 
+  const mockLoggerService = {
+    info: jest.fn(),
+    warn: jest.fn(),
+    error: jest.fn(),
+    debug: jest.fn()
+  }
+
   beforeEach(async () => {
     mockUserService = {
       getUserProfile: jest.fn(),
@@ -18,7 +27,7 @@ describe('UserController', () => {
       deleteUserAccount: jest.fn(),
       createUser: jest.fn(),
       getAllUsers: jest.fn()
-    } as any
+    } as unknown as jest.Mocked<UserService>
 
     const module = await Test.createTestingModule({
       controllers: [UserController],
@@ -26,6 +35,10 @@ describe('UserController', () => {
         {
           provide: UserService,
           useValue: mockUserService
+        },
+        {
+          provide: LoggerService,
+          useValue: mockLoggerService
         }
       ]
     })
@@ -36,6 +49,10 @@ describe('UserController', () => {
     controller = module.get<UserController>(UserController)
   })
 
+  afterEach(() => {
+    jest.clearAllMocks()
+  })
+
   describe('getProfile', () => {
     it('should get current user profile', async () => {
       const userId = '123e4567-e89b-12d3-a456-426614174000'
@@ -44,11 +61,11 @@ describe('UserController', () => {
       expectedDto.email = 'john@example.com'
       expectedDto.username = 'johndoe'
 
-      const mockUser: AuthenticatedUser = {
+      const mockUser = TestDataFactory.createAuthenticatedUser({
         sub: userId,
         email: 'john@example.com',
         username: 'johndoe'
-      }
+      })
       mockUserService.getUserProfile.mockResolvedValue(expectedDto)
 
       const result = await controller.getProfile(mockUser)

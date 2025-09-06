@@ -22,8 +22,12 @@ describe('UsernameValueObject', () => {
     })
 
     it('should throw error for null or undefined', () => {
-      expect(() => new UsernameValueObject(null as any)).toThrow('Username cannot be empty')
-      expect(() => new UsernameValueObject(undefined as any)).toThrow('Username cannot be empty')
+      expect(() => new UsernameValueObject(null as unknown as string)).toThrow(
+        'Username cannot be empty'
+      )
+      expect(() => new UsernameValueObject(undefined as unknown as string)).toThrow(
+        'Username cannot be empty'
+      )
     })
 
     it('should throw error for username too short', () => {
