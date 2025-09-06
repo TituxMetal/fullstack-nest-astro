@@ -17,9 +17,9 @@ describe('DomainValidation', () => {
     })
 
     it('should return false for non-string values', () => {
-      expect(DomainValidation.isValidEmail(null as any)).toBe(false)
-      expect(DomainValidation.isValidEmail(undefined as any)).toBe(false)
-      expect(DomainValidation.isValidEmail(123 as any)).toBe(false)
+      expect(DomainValidation.isValidEmail(null as unknown as string)).toBe(false)
+      expect(DomainValidation.isValidEmail(undefined as unknown as string)).toBe(false)
+      expect(DomainValidation.isValidEmail(123 as unknown as string)).toBe(false)
     })
   })
 
@@ -41,9 +41,9 @@ describe('DomainValidation', () => {
     })
 
     it('should return false for non-string values', () => {
-      expect(DomainValidation.isValidUsername(null as any)).toBe(false)
-      expect(DomainValidation.isValidUsername(undefined as any)).toBe(false)
-      expect(DomainValidation.isValidUsername(123 as any)).toBe(false)
+      expect(DomainValidation.isValidUsername(null as unknown as string)).toBe(false)
+      expect(DomainValidation.isValidUsername(undefined as unknown as string)).toBe(false)
+      expect(DomainValidation.isValidUsername(123 as unknown as string)).toBe(false)
     })
   })
 
@@ -64,9 +64,9 @@ describe('DomainValidation', () => {
     })
 
     it('should return false for non-string values', () => {
-      expect(DomainValidation.isValidPassword(null as any)).toBe(false)
-      expect(DomainValidation.isValidPassword(undefined as any)).toBe(false)
-      expect(DomainValidation.isValidPassword(123 as any)).toBe(false)
+      expect(DomainValidation.isValidPassword(null as unknown as string)).toBe(false)
+      expect(DomainValidation.isValidPassword(undefined as unknown as string)).toBe(false)
+      expect(DomainValidation.isValidPassword(123 as unknown as string)).toBe(false)
     })
   })
 
@@ -86,9 +86,9 @@ describe('DomainValidation', () => {
     })
 
     it('should return false for non-string values', () => {
-      expect(DomainValidation.isValidName(null as any)).toBe(false)
-      expect(DomainValidation.isValidName(undefined as any)).toBe(false)
-      expect(DomainValidation.isValidName(123 as any)).toBe(false)
+      expect(DomainValidation.isValidName(null as unknown as string)).toBe(false)
+      expect(DomainValidation.isValidName(undefined as unknown as string)).toBe(false)
+      expect(DomainValidation.isValidName(123 as unknown as string)).toBe(false)
     })
   })
 })
