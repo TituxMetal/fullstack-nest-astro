@@ -3,6 +3,7 @@ import { Controller, Get, Patch, Delete, Post, Body, UseGuards } from '@nestjs/c
 import { JwtAuthGuard } from '~/auth/infrastructure/guards'
 import type { AuthenticatedUser } from '~/shared/domain/types'
 import { GetCurrentUser } from '~/shared/infrastructure/decorators'
+import { LoggerService } from '~/shared/infrastructure/services'
 import type {
   GetUserProfileDto,
   UpdateUserProfileDto,
@@ -12,7 +13,10 @@ import { UserService } from '~/users/application/services'
 
 @Controller('users')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly loggerService: LoggerService
+  ) {}
 
   @Get('me')
   @UseGuards(JwtAuthGuard)
@@ -26,13 +30,36 @@ export class UserController {
     @GetCurrentUser() user: AuthenticatedUser,
     @Body() updateDto: UpdateUserProfileDto
   ): Promise<GetUserProfileDto> {
-    return this.userService.updateUserProfile(user.sub, updateDto)
+    this.loggerService.info('Profile update attempt', {
+      userId: user.sub,
+      email: user.email,
+      updateFields: Object.keys(updateDto)
+    })
+
+    const result = await this.userService.updateUserProfile(user.sub, updateDto)
+
+    this.loggerService.info('Profile update successful', {
+      userId: user.sub,
+      email: user.email
+    })
+
+    return result
   }
 
   @Delete('me')
   @UseGuards(JwtAuthGuard)
   async deleteAccount(@GetCurrentUser() user: AuthenticatedUser): Promise<void> {
-    return this.userService.deleteUserAccount(user.sub)
+    this.loggerService.warn('Account deletion attempt', {
+      userId: user.sub,
+      email: user.email
+    })
+
+    await this.userService.deleteUserAccount(user.sub)
+
+    this.loggerService.warn('Account deletion successful', {
+      userId: user.sub,
+      email: user.email
+    })
   }
 
   @Post()

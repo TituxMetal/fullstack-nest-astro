@@ -1,3 +1,4 @@
+import { TestDataFactory } from '~/shared/infrastructure/testing'
 import { GetUserProfileDto, UpdateUserProfileDto, CreateUserDto } from '~/users/application/dtos'
 import { UserEntity } from '~/users/domain/entities'
 import {
@@ -11,44 +12,36 @@ import { UserMapper } from './User.mapper'
 describe('UserMapper', () => {
   describe('toGetUserProfileDto', () => {
     it('should map UserEntity to GetUserProfileDto with all fields', () => {
-      const userEntity = new UserEntity(
-        new UserIdValueObject('123e4567-e89b-12d3-a456-426614174000'),
-        'john@example.com',
-        new UsernameValueObject('johndoe'),
-        new NameValueObject('John'),
-        new NameValueObject('Doe'),
-        true,
-        false,
-        new Date('2024-01-01T00:00:00Z'),
-        new Date('2024-01-02T00:00:00Z')
-      )
+      const userEntity = TestDataFactory.createUser({
+        id: '123e4567-e89b-12d3-a456-426614174000',
+        email: 'john@example.com',
+        username: 'johndoe',
+        firstName: 'John',
+        lastName: 'Doe'
+      })
 
       const result = UserMapper.toGetUserProfileDto(userEntity)
 
       expect(result).toBeInstanceOf(GetUserProfileDto)
-      expect(result.id).toBe('123e4567-e89b-12d3-a456-426614174000')
-      expect(result.email).toBe('john@example.com')
-      expect(result.username).toBe('johndoe')
-      expect(result.firstName).toBe('John')
-      expect(result.lastName).toBe('Doe')
-      expect(result.confirmed).toBe(true)
-      expect(result.blocked).toBe(false)
-      expect(result.createdAt).toEqual(new Date('2024-01-01T00:00:00Z'))
-      expect(result.updatedAt).toEqual(new Date('2024-01-02T00:00:00Z'))
+      expect(result.id).toBe(userEntity.id.value)
+      expect(result.email).toBe(userEntity.email)
+      expect(result.username).toBe(userEntity.username.value)
+      expect(result.firstName).toBe(userEntity.firstName?.value)
+      expect(result.lastName).toBe(userEntity.lastName?.value)
+      expect(result.confirmed).toBe(userEntity.confirmed)
+      expect(result.blocked).toBe(userEntity.blocked)
+      expect(result.createdAt).toEqual(userEntity.createdAt)
+      expect(result.updatedAt).toEqual(userEntity.updatedAt)
     })
 
     it('should map UserEntity to GetUserProfileDto with undefined names', () => {
-      const userEntity = new UserEntity(
-        new UserIdValueObject('123e4567-e89b-12d3-a456-426614174000'),
-        'john@example.com',
-        new UsernameValueObject('johndoe'),
-        undefined,
-        undefined,
-        true,
-        false,
-        new Date(),
-        new Date()
-      )
+      const userEntity = TestDataFactory.createUser({
+        id: '123e4567-e89b-12d3-a456-426614174000',
+        email: 'john@example.com',
+        username: 'johndoe',
+        firstName: undefined,
+        lastName: undefined
+      })
 
       const result = UserMapper.toGetUserProfileDto(userEntity)
 

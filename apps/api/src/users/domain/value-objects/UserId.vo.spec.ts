@@ -20,8 +20,12 @@ describe('UserIdValueObject', () => {
     })
 
     it('should throw error for null or undefined', () => {
-      expect(() => new UserIdValueObject(null as any)).toThrow('User ID cannot be empty')
-      expect(() => new UserIdValueObject(undefined as any)).toThrow('User ID cannot be empty')
+      expect(() => new UserIdValueObject(null as unknown as string)).toThrow(
+        'User ID cannot be empty'
+      )
+      expect(() => new UserIdValueObject(undefined as unknown as string)).toThrow(
+        'User ID cannot be empty'
+      )
     })
   })
 

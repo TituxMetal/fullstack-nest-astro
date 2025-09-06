@@ -32,8 +32,10 @@ describe('NameValueObject', () => {
     })
 
     it('should throw error for null or undefined', () => {
-      expect(() => new NameValueObject(null as any)).toThrow('Name cannot be empty')
-      expect(() => new NameValueObject(undefined as any)).toThrow('Name cannot be empty')
+      expect(() => new NameValueObject(null as unknown as string)).toThrow('Name cannot be empty')
+      expect(() => new NameValueObject(undefined as unknown as string)).toThrow(
+        'Name cannot be empty'
+      )
     })
 
     it('should throw error for whitespace only', () => {

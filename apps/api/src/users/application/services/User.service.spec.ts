@@ -1,5 +1,6 @@
 import { Test } from '@nestjs/testing'
 
+import { TestDataFactory } from '~/shared/infrastructure/testing'
 import { CreateUserDto, GetUserProfileDto, UpdateUserProfileDto } from '~/users/application/dtos'
 import {
   CreateUserUseCase,
@@ -87,12 +88,18 @@ describe('UserService', () => {
   describe('updateUserProfile', () => {
     it('should call updateUserProfileUseCase with correct parameters', async () => {
       const userId = '123e4567-e89b-12d3-a456-426614174000'
+      const updateData = TestDataFactory.createUpdateProfileData({
+        firstName: 'John',
+        lastName: 'Doe'
+      })
       const updateDto = new UpdateUserProfileDto()
-      updateDto.username = 'newusername'
+      updateDto.firstName = updateData.firstName
+      updateDto.lastName = updateData.lastName
 
       const expectedDto = new GetUserProfileDto()
       expectedDto.id = userId
-      expectedDto.username = 'newusername'
+      expectedDto.firstName = updateData.firstName
+      expectedDto.lastName = updateData.lastName
 
       mockUpdateUserProfileUseCase.execute.mockResolvedValue(expectedDto)
 
@@ -117,14 +124,19 @@ describe('UserService', () => {
 
   describe('createUser', () => {
     it('should call createUserUseCase with correct parameters', async () => {
+      const registerData = TestDataFactory.createRegisterData({
+        email: 'john@example.com',
+        username: 'johndoe',
+        password: 'password123'
+      })
       const createDto = new CreateUserDto()
-      createDto.email = 'john@example.com'
-      createDto.username = 'johndoe'
-      createDto.password = 'password123'
+      createDto.email = registerData.email
+      createDto.username = registerData.username
+      createDto.password = registerData.password
 
       const expectedDto = new GetUserProfileDto()
-      expectedDto.email = createDto.email
-      expectedDto.username = createDto.username
+      expectedDto.email = registerData.email
+      expectedDto.username = registerData.username
 
       mockCreateUserUseCase.execute.mockResolvedValue(expectedDto)
 
