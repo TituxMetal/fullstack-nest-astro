@@ -12,7 +12,7 @@ describe('PrismaProvider', () => {
         if (key === 'DATABASE_URL') return 'test-database-url'
         return undefined
       })
-    } as any
+    } as unknown as jest.Mocked<ConfigService>
 
     provider = new PrismaProvider(mockConfigService)
   })
