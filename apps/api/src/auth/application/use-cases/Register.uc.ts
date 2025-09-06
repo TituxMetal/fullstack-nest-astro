@@ -2,7 +2,12 @@ import { Injectable } from '@nestjs/common'
 
 import { RegisterDto } from '~/auth/application/dtos'
 import { AuthUserEntity } from '~/auth/domain/entities'
+import {
+  EmailAlreadyExistsException,
+  UsernameAlreadyExistsException
+} from '~/auth/domain/exceptions'
 import type { IAuthUserRepository } from '~/auth/domain/repositories'
+import type { IIdGenerator, IPasswordService } from '~/auth/domain/services'
 import { EmailValueObject, PasswordValueObject } from '~/auth/domain/value-objects'
 
 export interface RegisterResult {
@@ -14,20 +19,12 @@ export interface RegisterResult {
   }
 }
 
-interface PasswordService {
-  hash(plainPassword: string): Promise<string>
-}
-
-interface IdGenerator {
-  generate(): string
-}
-
 @Injectable()
 export class RegisterUseCase {
   constructor(
     private readonly authUserRepository: IAuthUserRepository,
-    private readonly passwordService: PasswordService,
-    private readonly idGenerator: IdGenerator
+    private readonly passwordService: IPasswordService,
+    private readonly idGenerator: IIdGenerator
   ) {}
 
   async execute(registerDto: RegisterDto): Promise<RegisterResult> {
@@ -35,14 +32,14 @@ export class RegisterUseCase {
 
     const existingUserByEmail = await this.authUserRepository.findByEmail(email)
     if (existingUserByEmail) {
-      throw new Error('Email already exists')
+      throw EmailAlreadyExistsException.withEmail(registerDto.email)
     }
 
     const existingUserByUsername = await this.authUserRepository.findByUsername(
       registerDto.username
     )
     if (existingUserByUsername) {
-      throw new Error('Username already exists')
+      throw UsernameAlreadyExistsException.withUsername(registerDto.username)
     }
 
     const hashedPassword = await this.passwordService.hash(registerDto.password)

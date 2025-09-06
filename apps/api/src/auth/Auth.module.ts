@@ -10,6 +10,7 @@ import { PrismaAuthUserRepository } from '~/auth/infrastructure/repositories'
 import { JwtService, PasswordService, TokenService } from '~/auth/infrastructure/services'
 import { ConfigModule as NestConfigModule, ConfigService as NestConfigService } from '~/config'
 import { PrismaModule } from '~/shared/infrastructure/database'
+import { LoggerService } from '~/shared/infrastructure/services'
 
 @Module({
   imports: [
@@ -43,12 +44,13 @@ import { PrismaModule } from '~/shared/infrastructure/database'
     },
     {
       provide: 'TokenBlacklistService',
-      useFactory: () => ({
+      useFactory: (loggerService: LoggerService) => ({
         blacklistToken: (token: string) => {
-          console.log(`Blacklisting token: ${token}`)
+          loggerService.warn('Token blacklisted', { token })
           return Promise.resolve()
         }
-      })
+      }),
+      inject: [LoggerService]
     },
     {
       provide: LoginUseCase,

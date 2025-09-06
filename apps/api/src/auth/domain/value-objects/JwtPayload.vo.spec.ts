@@ -45,15 +45,15 @@ describe('JwtPayloadValueObject', () => {
       })
 
       it('should throw error for null sub', () => {
-        expect(() => new JwtPayloadValueObject(null as any, validPayload.identifier)).toThrow(
-          'JWT payload sub (subject) must be a non-empty string'
-        )
+        expect(
+          () => new JwtPayloadValueObject(null as unknown as string, validPayload.identifier)
+        ).toThrow('JWT payload sub (subject) must be a non-empty string')
       })
 
       it('should throw error for undefined sub', () => {
-        expect(() => new JwtPayloadValueObject(undefined as any, validPayload.identifier)).toThrow(
-          'JWT payload sub (subject) must be a non-empty string'
-        )
+        expect(
+          () => new JwtPayloadValueObject(undefined as unknown as string, validPayload.identifier)
+        ).toThrow('JWT payload sub (subject) must be a non-empty string')
       })
     })
 
@@ -71,15 +71,15 @@ describe('JwtPayloadValueObject', () => {
       })
 
       it('should throw error for null identifier', () => {
-        expect(() => new JwtPayloadValueObject(validPayload.sub, null as any)).toThrow(
-          'JWT payload identifier must be a non-empty string'
-        )
+        expect(
+          () => new JwtPayloadValueObject(validPayload.sub, null as unknown as string)
+        ).toThrow('JWT payload identifier must be a non-empty string')
       })
 
       it('should throw error for undefined identifier', () => {
-        expect(() => new JwtPayloadValueObject(validPayload.sub, undefined as any)).toThrow(
-          'JWT payload identifier must be a non-empty string'
-        )
+        expect(
+          () => new JwtPayloadValueObject(validPayload.sub, undefined as unknown as string)
+        ).toThrow('JWT payload identifier must be a non-empty string')
       })
     })
 
@@ -93,7 +93,11 @@ describe('JwtPayloadValueObject', () => {
       it('should throw error for non-number iat', () => {
         expect(
           () =>
-            new JwtPayloadValueObject(validPayload.sub, validPayload.identifier, 'invalid' as any)
+            new JwtPayloadValueObject(
+              validPayload.sub,
+              validPayload.identifier,
+              'invalid' as unknown as number
+            )
         ).toThrow('JWT payload iat (issued at) must be a positive number')
       })
 
@@ -118,7 +122,7 @@ describe('JwtPayloadValueObject', () => {
               validPayload.sub,
               validPayload.identifier,
               undefined,
-              'invalid' as any
+              'invalid' as unknown as number
             )
         ).toThrow('JWT payload exp (expiration) must be a positive number')
       })

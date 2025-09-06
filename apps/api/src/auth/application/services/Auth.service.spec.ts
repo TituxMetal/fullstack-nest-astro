@@ -4,6 +4,7 @@ import type { TestingModule } from '@nestjs/testing'
 import { LoginDto, RegisterDto } from '~/auth/application/dtos'
 import { LoginUseCase, LogoutUseCase, RegisterUseCase } from '~/auth/application/use-cases'
 import type { LoginResult, LogoutResult, RegisterResult } from '~/auth/application/use-cases'
+import { TestDataFactory } from '~/shared/infrastructure/testing'
 
 import { AuthService } from './Auth.service'
 
@@ -57,7 +58,11 @@ describe('AuthService', () => {
 
   describe('login', () => {
     it('should call login use case with dto', async () => {
-      const loginDto = new LoginDto('user@example.com', 'password123')
+      const loginData = TestDataFactory.createLoginData({
+        emailOrUsername: 'user@example.com',
+        password: 'password123'
+      })
+      const loginDto = new LoginDto(loginData.emailOrUsername, loginData.password)
       const expectedResult: LoginResult = {
         token: 'jwt-token',
         user: {
@@ -80,7 +85,18 @@ describe('AuthService', () => {
 
   describe('register', () => {
     it('should call register use case with dto', async () => {
-      const registerDto = new RegisterDto('user@example.com', 'username', 'password123')
+      const registerData = TestDataFactory.createRegisterData({
+        email: 'user@example.com',
+        username: 'username',
+        password: 'password123'
+      })
+      const registerDto = new RegisterDto(
+        registerData.email,
+        registerData.username,
+        registerData.password,
+        registerData.firstName,
+        registerData.lastName
+      )
       const expectedResult: RegisterResult = {
         user: {
           id: 'user-id',

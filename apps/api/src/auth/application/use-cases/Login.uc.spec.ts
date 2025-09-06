@@ -1,8 +1,9 @@
 import { LoginDto } from '~/auth/application/dtos'
 import { AuthUserEntity } from '~/auth/domain/entities'
-import { InvalidCredentialsException } from '~/auth/domain/exceptions'
+import { AccountNotActiveException, InvalidCredentialsException } from '~/auth/domain/exceptions'
 import type { IAuthUserRepository } from '~/auth/domain/repositories'
 import { EmailValueObject, PasswordValueObject } from '~/auth/domain/value-objects'
+import { TestDataFactory } from '~/shared/infrastructure/testing'
 
 import { LoginUseCase } from './Login.uc'
 
@@ -40,18 +41,19 @@ describe('LoginUseCase', () => {
 
   describe('execute', () => {
     it('should login successfully with email', async () => {
-      const loginDto = new LoginDto('user@example.com', 'password123')
-      const email = new EmailValueObject('user@example.com')
-      const password = new PasswordValueObject('hashedPassword')
-      const authUser = new AuthUserEntity(
-        'user-id',
-        email,
-        'username',
-        password,
-        true,
-        false,
-        new Date()
-      )
+      const loginData = TestDataFactory.createLoginData({
+        emailOrUsername: 'user@example.com',
+        password: 'password123'
+      })
+      const loginDto = new LoginDto(loginData.emailOrUsername, loginData.password)
+      const authUser = TestDataFactory.createAuthUser({
+        id: 'user-id',
+        email: 'user@example.com',
+        username: 'username',
+        password: 'hashedPassword',
+        isActive: true,
+        isVerified: false
+      })
 
       mockAuthUserRepository.findByEmail.mockResolvedValue(authUser)
       mockPasswordService.compare.mockResolvedValue(true)
@@ -159,7 +161,7 @@ describe('LoginUseCase', () => {
       mockAuthUserRepository.findByEmail.mockResolvedValue(authUser)
       mockPasswordService.compare.mockResolvedValue(true)
 
-      await expect(loginUseCase.execute(loginDto)).rejects.toThrow(InvalidCredentialsException)
+      await expect(loginUseCase.execute(loginDto)).rejects.toThrow(AccountNotActiveException)
     })
   })
 })

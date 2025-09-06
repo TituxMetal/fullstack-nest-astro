@@ -8,10 +8,14 @@ type RequestWithCookies = Request & {
 import { AuthUserMapper } from '~/auth/application/mappers'
 import { AuthService } from '~/auth/application/services'
 import { JwtAuthGuard } from '~/auth/infrastructure/guards'
+import { LoggerService } from '~/shared/infrastructure/services'
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly loggerService: LoggerService
+  ) {}
 
   @Post('register')
   async register(
@@ -24,8 +28,20 @@ export class AuthController {
       lastName?: string
     }
   ) {
+    this.loggerService.info('Registration attempt', {
+      email: registerData.email,
+      username: registerData.username
+    })
+
     const registerDto = AuthUserMapper.toRegisterDto(registerData)
-    return this.authService.register(registerDto)
+    const result = await this.authService.register(registerDto)
+
+    this.loggerService.info('Registration successful', {
+      userId: result.user.id,
+      email: registerData.email
+    })
+
+    return result
   }
 
   @Post('login')
@@ -34,6 +50,10 @@ export class AuthController {
     @Body() loginData: { emailOrUsername: string; password: string },
     @Res({ passthrough: true }) response: Response
   ) {
+    this.loggerService.info('Login attempt', {
+      emailOrUsername: loginData.emailOrUsername
+    })
+
     const loginDto = AuthUserMapper.toLoginDto(loginData)
     const result = await this.authService.login(loginDto)
 
@@ -42,6 +62,11 @@ export class AuthController {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
       maxAge: 24 * 60 * 60 * 1000
+    })
+
+    this.loggerService.info('Login successful', {
+      userId: result.user.id,
+      email: result.user.email
     })
 
     return { user: result.user }

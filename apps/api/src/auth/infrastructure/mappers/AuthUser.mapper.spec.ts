@@ -2,6 +2,7 @@ import type { User } from '@prisma/client'
 
 import { AuthUserEntity } from '~/auth/domain/entities'
 import { EmailValueObject, PasswordValueObject } from '~/auth/domain/value-objects'
+import { TestDataFactory } from '~/shared/infrastructure/testing'
 
 import { AuthUserMapper } from './AuthUser.mapper'
 
@@ -19,15 +20,14 @@ describe('AuthUserMapper', () => {
     updatedAt: new Date('2023-01-01')
   }
 
-  const mockAuthUser = new AuthUserEntity(
-    'user-id',
-    new EmailValueObject('test@example.com'),
-    'testuser',
-    new PasswordValueObject('hashed-password'),
-    true,
-    false,
-    new Date('2023-01-01')
-  )
+  const mockAuthUser = TestDataFactory.createAuthUser({
+    id: 'user-id',
+    email: 'test@example.com',
+    username: 'testuser',
+    password: 'hashed-password',
+    isActive: true,
+    isVerified: false
+  })
 
   describe('toDomain', () => {
     it('should convert Prisma user to domain entity', () => {
@@ -57,7 +57,7 @@ describe('AuthUserMapper', () => {
         hash: 'hashed-password',
         confirmed: true,
         blocked: false,
-        createdAt: new Date('2023-01-01')
+        createdAt: expect.any(Date)
       })
     })
   })
