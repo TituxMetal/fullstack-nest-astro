@@ -2,8 +2,9 @@ import { Injectable } from '@nestjs/common'
 
 import { LoginDto } from '~/auth/application/dtos'
 import { AuthUserEntity } from '~/auth/domain/entities'
-import { InvalidCredentialsException } from '~/auth/domain/exceptions'
+import { AccountNotActiveException, InvalidCredentialsException } from '~/auth/domain/exceptions'
 import type { IAuthUserRepository } from '~/auth/domain/repositories'
+import type { IJwtService, IPasswordService } from '~/auth/domain/services'
 import { EmailValueObject } from '~/auth/domain/value-objects'
 
 export interface LoginResult {
@@ -15,20 +16,12 @@ export interface LoginResult {
   }
 }
 
-interface PasswordService {
-  compare(plainPassword: string, hashedPassword: string): Promise<boolean>
-}
-
-interface JwtService {
-  generateToken(payload: { sub: string; email: string; username: string }): string
-}
-
 @Injectable()
 export class LoginUseCase {
   constructor(
     private readonly authUserRepository: IAuthUserRepository,
-    private readonly passwordService: PasswordService,
-    private readonly jwtService: JwtService
+    private readonly passwordService: IPasswordService,
+    private readonly jwtService: IJwtService
   ) {}
 
   async execute(loginDto: LoginDto): Promise<LoginResult> {
@@ -48,7 +41,7 @@ export class LoginUseCase {
     }
 
     if (!authUser.isActive()) {
-      throw new InvalidCredentialsException('Account is not active')
+      throw AccountNotActiveException.create()
     }
 
     const isPasswordValid = await this.passwordService.compare(

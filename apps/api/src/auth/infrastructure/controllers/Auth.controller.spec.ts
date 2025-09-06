@@ -3,6 +3,7 @@ import type { TestingModule } from '@nestjs/testing'
 
 import { AuthService } from '~/auth/application/services'
 import { JwtAuthGuard } from '~/auth/infrastructure/guards'
+import { LoggerService } from '~/shared/infrastructure/services'
 
 import { AuthController } from './Auth.controller'
 
@@ -15,6 +16,13 @@ describe('AuthController', () => {
     logout: jest.fn()
   }
 
+  const mockLoggerService = {
+    info: jest.fn(),
+    warn: jest.fn(),
+    error: jest.fn(),
+    debug: jest.fn()
+  }
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [AuthController],
@@ -22,6 +30,10 @@ describe('AuthController', () => {
         {
           provide: AuthService,
           useValue: mockAuthService
+        },
+        {
+          provide: LoggerService,
+          useValue: mockLoggerService
         }
       ]
     })
@@ -30,6 +42,10 @@ describe('AuthController', () => {
       .compile()
 
     controller = module.get<AuthController>(AuthController)
+  })
+
+  afterEach(() => {
+    jest.clearAllMocks()
   })
 
   it('should be defined', () => {

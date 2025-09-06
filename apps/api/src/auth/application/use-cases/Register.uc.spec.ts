@@ -2,13 +2,14 @@ import { RegisterDto } from '~/auth/application/dtos'
 import { AuthUserEntity } from '~/auth/domain/entities'
 import type { IAuthUserRepository } from '~/auth/domain/repositories'
 import { EmailValueObject, PasswordValueObject } from '~/auth/domain/value-objects'
+import { TestDataFactory } from '~/shared/infrastructure/testing'
 
 import { RegisterUseCase } from './Register.uc'
 
 describe('RegisterUseCase', () => {
   let registerUseCase: RegisterUseCase
   let mockAuthUserRepository: jest.Mocked<IAuthUserRepository>
-  let mockPasswordService: { hash: jest.Mock }
+  let mockPasswordService: { hash: jest.Mock; compare: jest.Mock }
   let mockIdGenerator: { generate: jest.Mock }
 
   beforeEach(() => {
@@ -22,7 +23,8 @@ describe('RegisterUseCase', () => {
     }
 
     mockPasswordService = {
-      hash: jest.fn()
+      hash: jest.fn(),
+      compare: jest.fn()
     }
 
     mockIdGenerator = {
@@ -38,12 +40,19 @@ describe('RegisterUseCase', () => {
 
   describe('execute', () => {
     it('should register a new user successfully', async () => {
+      const registerData = TestDataFactory.createRegisterData({
+        email: 'user@example.com',
+        username: 'username',
+        password: 'Password123!',
+        firstName: 'John',
+        lastName: 'Doe'
+      })
       const registerDto = new RegisterDto(
-        'user@example.com',
-        'username',
-        'Password123!',
-        'John',
-        'Doe'
+        registerData.email,
+        registerData.username,
+        registerData.password,
+        registerData.firstName,
+        registerData.lastName
       )
 
       mockAuthUserRepository.findByEmail.mockResolvedValue(null)
@@ -51,15 +60,14 @@ describe('RegisterUseCase', () => {
       mockPasswordService.hash.mockResolvedValue('hashedPassword')
       mockIdGenerator.generate.mockReturnValue('user-id')
 
-      const savedUser = new AuthUserEntity(
-        'user-id',
-        new EmailValueObject('user@example.com'),
-        'username',
-        new PasswordValueObject('hashedPassword'),
-        false,
-        false,
-        new Date()
-      )
+      const savedUser = TestDataFactory.createAuthUser({
+        id: 'user-id',
+        email: 'user@example.com',
+        username: 'username',
+        password: 'hashedPassword',
+        isActive: false,
+        isVerified: false
+      })
 
       mockAuthUserRepository.save.mockResolvedValue(savedUser)
 
